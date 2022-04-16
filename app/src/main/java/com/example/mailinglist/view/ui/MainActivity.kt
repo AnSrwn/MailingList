@@ -1,10 +1,10 @@
-package com.example.mailinglist
+package com.example.mailinglist.view.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
-import com.example.mailinglist.model.Mail
+import com.example.mailinglist.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
