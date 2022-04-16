@@ -7,12 +7,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.model.Mail
 
-class CustomListAdapter(private val mails: Array<Mail>): RecyclerView.Adapter<CustomListAdapter.ViewHolder>() {
+class CustomListAdapter(private val mails: Array<Mail>) :
+    RecyclerView.Adapter<CustomListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.custom_list_view_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.custom_list_view_item, parent, false)
         return ViewHolder(view)
     }
 

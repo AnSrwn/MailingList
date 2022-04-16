@@ -1,24 +1,45 @@
 package com.example.mailinglist
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.model.Mail
 
 class MailListFragment : Fragment(R.layout.fragment_mail_list) {
     private val mails = arrayOf(
-        Mail("First Mail", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."),
-        Mail("ergsr Mail", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."),
-        Mail("Third Mail", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."),
-        Mail("Whatsup Mail", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."),
-        Mail("Hey ho", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."),
-        Mail("gfrdgvd", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."),
+        Mail(
+            "First Mail",
+            "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."
+        ),
+        Mail(
+            "ergsr Mail",
+            "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."
+        ),
+        Mail(
+            "Third Mail",
+            "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."
+        ),
+        Mail(
+            "Whatsup Mail",
+            "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."
+        ),
+        Mail(
+            "Hey ho",
+            "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."
+        ),
+        Mail(
+            "gfrdgvd",
+            "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."
+        ),
         Mail("House", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."),
-        Mail("Search", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."),
+        Mail(
+            "Search",
+            "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno."
+        ),
         Mail("Test", "Hello Peter, mfoifweoam noiewomwe ojinfowem oifejwomfew jiofwemopfew okno.")
     )
 
