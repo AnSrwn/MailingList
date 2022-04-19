@@ -14,8 +14,15 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
-                add<MailListFragment>(R.id.fragment_container_view)
+                add<AuthenticationFragment>(R.id.fragment_container_view)
             }
         }
+
+//        if (savedInstanceState == null) {
+//            supportFragmentManager.commit {
+//                setReorderingAllowed(true)
+//                add<MailListFragment>(R.id.fragment_container_view)
+//            }
+//        }
     }
 }
