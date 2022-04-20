@@ -1,53 +1,34 @@
 package com.example.mailinglist.repository
 
+import com.example.mailinglist.Constants
 import com.example.mailinglist.Credentials
 import com.example.mailinglist.model.Mail
 import com.sun.mail.imap.IMAPStore
 import jakarta.mail.*
+import jakarta.mail.search.SearchTerm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.*
 
 
-const val STORE_TYPE = "imap"
-const val IMAP_HOST = "imap.gmail.com"
-const val PORT = 993
-const val OAUTH2_ACCESS_TOKEN = ""
-
 class MailRepository : MailService {
-    override suspend fun getAllMails(): Array<Mail> {
-        val mails: Array<Mail> = emptyArray()
+    override suspend fun getAllMails(): List<Mail> {
+        var mails: List<Mail> = emptyList()
+
         try {
-            // get session object
-            val props = Properties()
-            props["mail.imap.ssl.enable"] = "true" // required for Gmail
-            props["mail.imap.auth.mechanisms"] = "XOAUTH2"
-            val emailSession: Session = Session.getDefaultInstance(props)
+            val emailSession: Session = getSession()
+            val emailStore: IMAPStore = emailSession.getStore(Constants.STORE_TYPE) as IMAPStore
 
-            // authorization
+            mails = MainScope().async {
+                connectEmailStore(emailStore)
+                val inboxFolder = getInboxFolder(emailStore)
+                return@async getEmailsOfFolder(inboxFolder)
+            }.await()
 
-
-            // connect with imap server
-            val emailStore: IMAPStore = emailSession.getStore(STORE_TYPE) as IMAPStore
-            val coroutineScope = MainScope()
-            coroutineScope.launch {
-                withContext(Dispatchers.IO) {
-                    emailStore.connect(IMAP_HOST, PORT, Credentials.USER, OAUTH2_ACCESS_TOKEN)
-                }
-
-                // get inbox folder
-                val inboxFolder = emailStore.getFolder("INBOX")
-                inboxFolder.open(Folder.READ_ONLY)
-
-                // fetch mails
-                val messages: Array<Message> = inboxFolder.messages
-                for ((index, message) in messages.withIndex()) {
-                    mails[index] = Mail(message.subject, message.content.toString())
-                }
-            }
+            //TODO Handle exceptions
         } catch (e: NoSuchProviderException) {
             e.printStackTrace()
         } catch (e: MessagingException) {
@@ -61,4 +42,61 @@ class MailRepository : MailService {
         return mails
     }
 
+    private fun getSession(): Session {
+        val props = Properties()
+        props[Constants.SESSION_PROP_SSL_ENABLE] = "true"
+//        props[Constants.SESSION_PROP_AUTH_MECHANISM] = "XOAUTH2"
+        return Session.getDefaultInstance(props)
+    }
+
+    private suspend fun getEmailsOfFolder(
+        folder: Folder
+    ): List<Mail> {
+        var messages: List<Message>
+        var mails: List<Mail>
+        withContext(Dispatchers.Default) {
+//            messages = folder.messages.toList()
+
+            val term: SearchTerm = object : SearchTerm() {
+                override fun match(message: Message): Boolean {
+                    try {
+                        if (message.subject.contains("[abelana]")) {
+                            return true
+                        }
+                    } catch (ex: MessagingException) {
+                        ex.printStackTrace()
+                    }
+                    return false
+                }
+            }
+            messages = folder.search(term).toList()
+
+            mails = messages.map { message ->
+                Mail(message)
+            }
+        }
+        return mails
+    }
+
+    private suspend fun getInboxFolder(
+        emailStore: IMAPStore
+    ): Folder {
+        var inboxFolder: Folder
+        withContext(Dispatchers.Default) {
+            inboxFolder = emailStore.getFolder(Constants.FOLDER_INBOX)
+            inboxFolder.open(Folder.READ_ONLY)
+        }
+        return inboxFolder
+    }
+
+    private suspend fun connectEmailStore(emailStore: IMAPStore) {
+        withContext(Dispatchers.Default) {
+            emailStore.connect(
+                Constants.IMAP_HOST_Lima,
+                Constants.PORT,
+                Credentials.USER_LIMA,
+                Credentials.PASSWORD_LIMA
+            )
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.mailinglist.view.adapter
 
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.R
 import com.example.mailinglist.model.Mail
 
-class CustomListAdapter(private val mails: Array<Mail>) :
+class CustomListAdapter(private val mails: List<Mail>) :
     RecyclerView.Adapter<CustomListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -23,7 +24,7 @@ class CustomListAdapter(private val mails: Array<Mail>) :
         val mail = mails[position]
 
         holder.subjectView.text = mail.subject
-        holder.contentView.text = mail.content
+        holder.contentView.text = if (mail.isHtml) Html.fromHtml(mail.content) else mail.content
     }
 
     override fun getItemCount(): Int {

@@ -2,6 +2,17 @@ package com.example.mailinglist
 
 class Constants {
     companion object {
+        const val STORE_TYPE = "imap"
+        const val PORT = 993
+
+        const val IMAP_HOST_Google = "imap.gmail.com"
+        const val IMAP_HOST_Lima = "mail.lima-city.de"
+
+        const val SESSION_PROP_SSL_ENABLE = "mail.imap.ssl.enable"
+        const val SESSION_PROP_AUTH_MECHANISM = "mail.imap.auth.mechanisms"
+
+        const val FOLDER_INBOX = "INBOX"
+
         const val SHARED_PREFERENCES_NAME = "AUTH_STATE_PREFERENCE"
         const val AUTH_STATE = "AUTH_STATE"
 

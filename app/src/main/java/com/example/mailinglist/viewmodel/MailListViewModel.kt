@@ -8,12 +8,12 @@ import com.example.mailinglist.repository.MailRepository
 
 class MailListViewModel : ViewModel() {
     private val mailRepository = MailRepository()
-    private val mails: LiveData<Array<Mail>> = liveData {
-        val data: Array<Mail> = mailRepository.getAllMails()
+    private val mails: LiveData<List<Mail>> = liveData {
+        val data: List<Mail> = mailRepository.getAllMails()
         emit(data)
     }
 
-    fun getMails(): LiveData<Array<Mail>> {
+    fun getMails(): LiveData<List<Mail>> {
         return mails
     }
 }
