@@ -25,6 +25,8 @@ class CustomListAdapter(private val mails: List<Mail>) :
 
         holder.subjectView.text = mail.subject
         holder.contentView.text = if (mail.isHtml) Html.fromHtml(mail.content) else mail.content
+        holder.senderView.text = if (mail.sender.personal != null) mail.sender.personal else ""
+        holder.dateView.text = mail.sentDate.toString()
     }
 
     override fun getItemCount(): Int {
@@ -34,5 +36,7 @@ class CustomListAdapter(private val mails: List<Mail>) :
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val subjectView: TextView = itemView.findViewById(R.id.subjectView)
         val contentView: TextView = itemView.findViewById(R.id.contentView)
+        val senderView: TextView = itemView.findViewById(R.id.senderView)
+        val dateView: TextView = itemView.findViewById(R.id.dateView)
     }
 }

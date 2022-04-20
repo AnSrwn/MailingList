@@ -4,10 +4,18 @@ import jakarta.mail.Message
 import jakarta.mail.MessagingException
 import jakarta.mail.Multipart
 import jakarta.mail.Part
+import jakarta.mail.internet.InternetAddress
 import java.io.IOException
+import java.util.*
 
 
-class Mail(val subject: String, val content: String, val isHtml: Boolean) {
+class Mail(
+    val subject: String,
+    val content: String,
+    val isHtml: Boolean,
+    val sentDate: Date,
+    val sender: InternetAddress
+) {
     companion object {
         operator fun invoke(message: Message): Mail {
             val content = getMessageTextContent(message)
@@ -15,7 +23,9 @@ class Mail(val subject: String, val content: String, val isHtml: Boolean) {
             return Mail(
                 message.subject,
                 content.text ?: "",
-                content.isHtml
+                content.isHtml,
+                message.sentDate,
+                message.from[0] as InternetAddress
             )
         }
 
