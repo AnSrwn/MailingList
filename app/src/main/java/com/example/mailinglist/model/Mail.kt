@@ -9,12 +9,13 @@ import java.io.IOException
 import java.util.*
 
 
-class Mail(
+open class Mail(
     val subject: String,
     val content: String,
     val isHtml: Boolean,
     val sentDate: Date,
-    val sender: InternetAddress
+    val sender: InternetAddress,
+    val replyTo: InternetAddress
 ) {
     companion object {
         operator fun invoke(message: Message): Mail {
@@ -25,7 +26,8 @@ class Mail(
                 content.text ?: "",
                 content.isHtml,
                 message.sentDate,
-                message.from[0] as InternetAddress
+                message.from[0] as InternetAddress,
+                message.replyTo[0] as InternetAddress
             )
         }
 
