@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.R
 import com.example.mailinglist.model.Mail
+import com.example.mailinglist.utils.TimeUtil
 
 class CustomListAdapter(private val mails: List<Mail>) :
     RecyclerView.Adapter<CustomListAdapter.ViewHolder>() {
@@ -26,7 +27,7 @@ class CustomListAdapter(private val mails: List<Mail>) :
         holder.subjectView.text = mail.subject
         holder.contentView.text = if (mail.isHtml) Html.fromHtml(mail.content) else mail.content
         holder.senderView.text = if (mail.sender.personal != null) mail.sender.personal else ""
-        holder.dateView.text = mail.sentDate.toString()
+        holder.dateView.text = TimeUtil.calculateElapsedTime(holder.itemView.context, mail.sentDate)
     }
 
     override fun getItemCount(): Int {
