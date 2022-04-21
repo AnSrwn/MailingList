@@ -9,6 +9,7 @@ class MailListItem(
     val isHtml: Boolean,
     val sentDate: Date,
     val sender: InternetAddress,
+    val replyTo: InternetAddress,
     var isExpanded: Boolean
 ) {
     companion object {
@@ -19,6 +20,7 @@ class MailListItem(
                 mail.isHtml,
                 mail.sentDate,
                 mail.sender,
+                mail.replyTo,
                 false
             )
         }

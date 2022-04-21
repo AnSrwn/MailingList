@@ -1,5 +1,7 @@
 package com.example.mailinglist.view.adapter
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.Constants
 import com.example.mailinglist.R
 import com.example.mailinglist.model.MailListItem
+import com.example.mailinglist.utils.MailUtil
+import com.example.mailinglist.utils.MailUtil.Companion.buildAnswerEmail
 import com.example.mailinglist.utils.TimeUtil
 
 class MailListAdapter(private val mails: List<MailListItem>) :
@@ -43,8 +47,7 @@ class MailListAdapter(private val mails: List<MailListItem>) :
                 mailListItem.content,
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             ); else mailListItem.content
-        holder.senderView.text =
-            if (mailListItem.sender.personal != null) mailListItem.sender.personal else ""
+        holder.senderView.text = MailUtil.getSenderName(mailListItem)
         holder.dateView.text =
             TimeUtil.calculateElapsedTime(holder.itemView.context, mailListItem.sentDate)
 
@@ -53,6 +56,17 @@ class MailListAdapter(private val mails: List<MailListItem>) :
             mailListItem.isExpanded = !expanded
             notifyItemChanged(position)
             listView?.smoothScrollToPosition(position)
+        }
+
+        holder.answerButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(mailListItem.replyTo.address))
+                putExtra(Intent.EXTRA_SUBJECT, "Re: " + mailListItem.subject)
+                putExtra(Intent.EXTRA_TEXT, buildAnswerEmail(mailListItem))
+            }
+
+            holder.itemView.context.startActivity(intent)
         }
     }
 
@@ -86,5 +100,6 @@ class MailListAdapter(private val mails: List<MailListItem>) :
         val senderView: TextView = itemView.findViewById(R.id.senderView)
         val dateView: TextView = itemView.findViewById(R.id.dateView)
         val expandCollapseButton: Button = itemView.findViewById(R.id.expandCollapseButton)
+        val answerButton: Button = itemView.findViewById(R.id.answerButton)
     }
 }
