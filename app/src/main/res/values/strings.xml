@@ -1,5 +1,24 @@
 <resources>
     <string name="app_name">MailingList</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="answer">Antworten</string>
+    <string name="expand">mehr</string>
+    <string name="collapse">weniger</string>
+    <string name="images">Bilder</string>
+
+    <string name="time_period_prefix">Vor</string>
+    <string name="year">Jahr</string>
+    <string name="years">Jahre</string>
+    <string name="month">Monat</string>
+    <string name="months">Monate</string>
+    <string name="week">Woche</string>
+    <string name="weeks">Wochen</string>
+    <string name="day">Tag</string>
+    <string name="days">Tage</string>
+    <string name="hour">Stunde</string>
+    <string name="hours">Stunden</string>
+    <string name="minute">Minute</string>
+    <string name="minutes">Minuten</string>
+    <string name="second">Sekunde</string>
+    <string name="seconds">Sekunden</string>
 </resources>
