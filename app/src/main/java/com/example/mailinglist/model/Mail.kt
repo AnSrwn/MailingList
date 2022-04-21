@@ -9,7 +9,7 @@ import java.io.IOException
 import java.util.*
 
 
-class Mail(
+open class Mail(
     val subject: String,
     val content: String,
     val isHtml: Boolean,

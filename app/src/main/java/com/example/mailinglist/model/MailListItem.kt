@@ -4,13 +4,12 @@ import jakarta.mail.internet.InternetAddress
 import java.util.*
 
 class MailListItem(
-    val subject: String,
-    val content: String,
-    val isHtml: Boolean,
-    val sentDate: Date,
-    val sender: InternetAddress,
-    val replyTo: InternetAddress,
-    var isExpanded: Boolean
+    subject: String, content: String, isHtml: Boolean, sentDate: Date,
+    sender: InternetAddress, replyTo: InternetAddress, var isExpanded: Boolean
+) : Mail(
+    subject, content,
+    isHtml,
+    sentDate, sender, replyTo
 ) {
     companion object {
         operator fun invoke(mail: Mail): MailListItem {
@@ -25,4 +24,5 @@ class MailListItem(
             )
         }
     }
+
 }
