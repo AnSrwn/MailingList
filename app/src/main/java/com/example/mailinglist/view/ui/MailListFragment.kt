@@ -9,7 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.R
-import com.example.mailinglist.view.adapter.CustomListAdapter
+import com.example.mailinglist.model.MailListItem
+import com.example.mailinglist.view.adapter.MailListAdapter
 import com.example.mailinglist.viewmodel.MailListViewModel
 
 class MailListFragment : Fragment(R.layout.fragment_mail_list) {
@@ -17,7 +18,6 @@ class MailListFragment : Fragment(R.layout.fragment_mail_list) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_mail_list, container, false)
     }
 
@@ -26,10 +26,15 @@ class MailListFragment : Fragment(R.layout.fragment_mail_list) {
 
         val listView = view.findViewById<RecyclerView>(R.id.mailListView)
         listView.layoutManager = LinearLayoutManager(activity)
+        listView.itemAnimator = null
 
         val model: MailListViewModel by viewModels()
         model.getMails().observe(viewLifecycleOwner) { mails ->
-            val adapter = CustomListAdapter(mails)
+            val mailListItems = mails.map { mail ->
+                MailListItem(mail)
+            }
+
+            val adapter = MailListAdapter(mailListItems)
             listView.adapter = adapter
         }
     }

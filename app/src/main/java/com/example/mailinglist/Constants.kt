@@ -9,5 +9,7 @@ class Constants {
         const val SESSION_PROP_SSL_ENABLE = "mail.imap.ssl.enable"
 
         const val FOLDER_INBOX = "INBOX"
+
+        const val CARD_MAX_LINES = 5
     }
 }

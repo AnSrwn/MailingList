@@ -2,6 +2,8 @@
     <string name="app_name">MailingList</string>
 
     <string name="answer">Antworten</string>
+    <string name="expand">mehr</string>
+    <string name="collapse">weniger</string>
     <string name="images">Bilder</string>
 
     <string name="time_period_prefix">Vor</string>
