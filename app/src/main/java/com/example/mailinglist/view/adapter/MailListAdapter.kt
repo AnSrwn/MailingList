@@ -37,7 +37,7 @@ class MailListAdapter(private val mails: List<MailListItem>) :
         setContentViewMaxLines(holder, mailListItem)
         setExpandCollapseButtonText(holder, mailListItem)
 
-        holder.subjectView.text = mailListItem.subject
+        holder.subjectView.text = mailListItem.subject.replace(Regex("\\[\\w+]\\s+"), "")
         holder.contentView.text =
             if (mailListItem.isHtml) HtmlCompat.fromHtml(
                 mailListItem.content,
