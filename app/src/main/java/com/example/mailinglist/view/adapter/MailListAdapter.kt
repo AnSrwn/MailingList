@@ -1,11 +1,11 @@
 package com.example.mailinglist.view.adapter
 
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.Constants
 import com.example.mailinglist.R
@@ -39,7 +39,10 @@ class MailListAdapter(private val mails: List<MailListItem>) :
 
         holder.subjectView.text = mailListItem.subject
         holder.contentView.text =
-            if (mailListItem.isHtml) Html.fromHtml(mailListItem.content) else mailListItem.content
+            if (mailListItem.isHtml) HtmlCompat.fromHtml(
+                mailListItem.content,
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            ); else mailListItem.content
         holder.senderView.text =
             if (mailListItem.sender.personal != null) mailListItem.sender.personal else ""
         holder.dateView.text =
