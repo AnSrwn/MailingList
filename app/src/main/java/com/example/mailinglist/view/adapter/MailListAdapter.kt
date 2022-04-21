@@ -47,7 +47,9 @@ class MailListAdapter(private val mails: List<MailListItem>) :
                 mailListItem.content,
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             ); else mailListItem.content
-        holder.senderView.text = MailUtil.getSenderName(mailListItem)
+        val senderName = MailUtil.getSenderName(mailListItem)
+        if (senderName != null) holder.senderView.text =
+            senderName else holder.senderView.visibility = View.GONE
         holder.dateView.text =
             TimeUtil.calculateElapsedTime(holder.itemView.context, mailListItem.sentDate)
 
@@ -55,7 +57,7 @@ class MailListAdapter(private val mails: List<MailListItem>) :
             val expanded = mailListItem.isExpanded
             mailListItem.isExpanded = !expanded
             notifyItemChanged(position)
-            listView?.smoothScrollToPosition(position)
+            if (expanded) listView?.smoothScrollToPosition(position)
         }
 
         holder.answerButton.setOnClickListener {
