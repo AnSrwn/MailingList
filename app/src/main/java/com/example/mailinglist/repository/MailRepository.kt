@@ -9,7 +9,8 @@ import kotlinx.coroutines.async
 class MailRepository : MailService {
     override suspend fun getAllMails(): List<Mail> {
         return MainScope().async {
-            return@async Store().getMails(Constants.FOLDER_INBOX, "[abelana]")
+            val unsortedMails = Store().getMails(Constants.FOLDER_INBOX, "[abelana]")
+            return@async unsortedMails.sortedBy { mail -> mail.sentDate }
         }.await()
     }
 }
