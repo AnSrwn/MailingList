@@ -5,7 +5,7 @@ import com.example.mailinglist.model.Mail
 class MailUtil {
     companion object {
         fun buildAnswerEmail(originalMail: Mail): String {
-            val replyToName = getSenderName(originalMail)
+            val replyToName = originalMail.senderName
             return if (replyToName != null) "Hallo $replyToName,\n\n" else ""
 
 //            var answerMail = "\n\n"
@@ -19,16 +19,6 @@ class MailUtil {
 //                originalMail.content,
 //                HtmlCompat.FROM_HTML_MODE_LEGACY
 //            ); else originalMail.content
-        }
-
-        fun getSenderName(mail: Mail): String? {
-            var replyToName: String? = null
-            if (mail.replyTo.personal != null) {
-                replyToName = mail.replyTo.personal
-            } else if (mail.sender.personal != null) {
-                replyToName = mail.sender.personal
-            }
-            return replyToName
         }
     }
 }

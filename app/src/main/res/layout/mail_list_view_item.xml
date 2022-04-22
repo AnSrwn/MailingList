@@ -27,7 +27,8 @@
                     android:id="@+id/subjectView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?attr/textAppearanceHeadline6" />
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textIsSelectable="true" />
 
                 <TextView
                     android:id="@+id/senderView"
@@ -35,7 +36,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="?android:attr/textColorSecondary" />
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textIsSelectable="true" />
 
             </LinearLayout>
 
@@ -58,8 +60,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:autoLink="web"
                     android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="?android:attr/textColorSecondary" />
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textIsSelectable="true" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/expandCollapseButton"
