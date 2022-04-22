@@ -2,6 +2,7 @@ package com.example.mailinglist.view.adapter
 
 import android.content.Intent
 import android.net.Uri
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,11 +43,13 @@ class MailListAdapter(private val mails: List<MailListItem>) :
         setExpandCollapseButtonText(holder, mailListItem)
 
         holder.subjectView.text = mailListItem.subject.replace(Regex("\\[\\w+]\\s+"), "")
-        holder.contentView.text =
-            if (mailListItem.isHtml) HtmlCompat.fromHtml(
-                mailListItem.content,
-                HtmlCompat.FROM_HTML_MODE_LEGACY
-            ); else mailListItem.content
+        if (mailListItem.isHtml) {
+            holder.contentView.text =
+                HtmlCompat.fromHtml(mailListItem.content, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            holder.contentView.movementMethod = LinkMovementMethod.getInstance()
+        } else {
+            holder.contentView.text = mailListItem.content
+        }
         val senderName = MailUtil.getSenderName(mailListItem)
         if (senderName != null) holder.senderView.text =
             senderName else holder.senderView.visibility = View.GONE
