@@ -1,11 +1,10 @@
 package com.example.mailinglist.model
 
 import jakarta.mail.Message
-import jakarta.mail.MessagingException
 import jakarta.mail.Multipart
 import jakarta.mail.Part
 import jakarta.mail.internet.InternetAddress
-import java.io.IOException
+import jakarta.mail.internet.MimeBodyPart
 import java.util.*
 
 
@@ -19,7 +18,8 @@ open class Mail(
 ) {
     companion object {
         operator fun invoke(message: Message): Mail {
-            val content = getMessageTextContent(message)
+            val content = getMessageContent(message)
+            getMessageImages(message)
 
             return Mail(
                 message.subject,
@@ -31,9 +31,22 @@ open class Mail(
             )
         }
 
-        @Throws(MessagingException::class, IOException::class)
-        private fun getMessageTextContent(part: Part): MessageTextContent {
-            val mailContent = MessageTextContent(null, false)
+        private fun getMessageImages(message: Message) {
+            if (message.contentType.contains("multipart")) {
+                val multiPart: Multipart = message.content as Multipart
+
+                for (i in 0 until multiPart.count) {
+                    val part: MimeBodyPart = multiPart.getBodyPart(i) as MimeBodyPart
+                    if (Part.ATTACHMENT.equals(part.disposition, true)) {
+                        val name = part.fileName
+                        val type = part.contentType
+                    }
+                }
+            }
+        }
+
+        private fun getMessageContent(part: Part): MessageContent {
+            val mailContent = MessageContent(null, false)
             if (part.isMimeType("text/*")) {
                 mailContent.text = part.content as String
                 mailContent.isHtml = part.isMimeType("text/html")
@@ -47,13 +60,13 @@ open class Mail(
                 for (i in 0 until multipart.count) {
                     val bodyPart: Part = multipart.getBodyPart(i)
                     if (bodyPart.isMimeType("text/plain")) {
-                        if (text == null) text = getMessageTextContent(bodyPart).text
+                        if (text == null) text = getMessageContent(bodyPart).text
                         continue
                     } else if (bodyPart.isMimeType("text/html")) {
-                        val mc = getMessageTextContent(bodyPart)
+                        val mc = getMessageContent(bodyPart)
                         if (mc.text != null) return mc
                     } else {
-                        return getMessageTextContent(bodyPart)
+                        return getMessageContent(bodyPart)
                     }
                 }
                 mailContent.text = text
@@ -61,7 +74,7 @@ open class Mail(
             } else if (part.isMimeType("multipart/*")) {
                 val multipart = part.content as Multipart
                 for (i in 0 until multipart.count) {
-                    val mc = getMessageTextContent(multipart.getBodyPart(i))
+                    val mc = getMessageContent(multipart.getBodyPart(i))
                     if (mc.text != null) return mc
                 }
             }
@@ -69,5 +82,5 @@ open class Mail(
         }
     }
 
-    data class MessageTextContent(var text: String?, var isHtml: Boolean)
+    data class MessageContent(var text: String?, var isHtml: Boolean)
 }
