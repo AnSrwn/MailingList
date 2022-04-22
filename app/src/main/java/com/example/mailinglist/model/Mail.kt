@@ -17,6 +17,7 @@ open class Mail(
     val replyToAddress: String
 ) {
     companion object {
+        //TODO maybe use Builder or Factory Pattern instead?
         operator fun invoke(message: Message): Mail {
             return Mail(
                 message.subject,
