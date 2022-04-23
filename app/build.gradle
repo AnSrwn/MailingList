@@ -3,6 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+def credentialsPropertiesFile = rootProject.file("credentials.properties")
+def credentialsProperties = new Properties()
+credentialsProperties.load(new FileInputStream(credentialsPropertiesFile))
+
 android {
     compileSdk 32
 
@@ -18,7 +22,8 @@ android {
         manifestPlaceholders = [
                 appAuthRedirectScheme: 'com.example.mailinglist'
         ]
-//        manifestPlaceholders = [appAuthRedirectScheme: 'com.example.mailinglist://appauth']
+        buildConfigField("String", "USER", credentialsProperties['user'])
+        buildConfigField("String", "PASSWORD", credentialsProperties['password'])
     }
 
     buildTypes {
