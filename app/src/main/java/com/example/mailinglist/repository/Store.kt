@@ -1,7 +1,7 @@
 package com.example.mailinglist.repository
 
+import com.example.mailinglist.BuildConfig
 import com.example.mailinglist.Constants
-import com.example.mailinglist.Credentials
 import com.example.mailinglist.model.Mail
 import com.sun.mail.imap.IMAPStore
 import jakarta.mail.Folder
@@ -48,8 +48,8 @@ class Store {
             emailStore.connect(
                 Constants.IMAP_HOST_Lima,
                 Constants.PORT,
-                Credentials.USER_LIMA,
-                Credentials.PASSWORD_LIMA
+                BuildConfig.USER,
+                BuildConfig.PASSWORD
             )
         }
     }
