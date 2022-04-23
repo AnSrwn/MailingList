@@ -1,7 +1,7 @@
 package com.example.mailinglist.repository
 
+import com.example.mailinglist.BuildConfig
 import com.example.mailinglist.Constants
-import com.example.mailinglist.Credentials
 import com.example.mailinglist.model.Mail
 import com.sun.mail.imap.IMAPStore
 import jakarta.mail.Folder
@@ -30,7 +30,7 @@ class Store {
     private suspend fun createStore(): IMAPStore {
         val mailSession: Session = getSession()
         val mailStore = mailSession.getStore(Constants.STORE_TYPE) as IMAPStore
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             connectEmailStore(mailStore)
         }
 
@@ -44,12 +44,12 @@ class Store {
     }
 
     private suspend fun connectEmailStore(emailStore: IMAPStore) {
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             emailStore.connect(
                 Constants.IMAP_HOST_Lima,
                 Constants.PORT,
-                Credentials.USER_LIMA,
-                Credentials.PASSWORD_LIMA
+                BuildConfig.USER,
+                BuildConfig.PASSWORD
             )
         }
     }
@@ -59,7 +59,7 @@ class Store {
         folderName: String
     ): Folder {
         var folder: Folder
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             folder = emailStore.getFolder(folderName)
             folder.open(Folder.READ_ONLY)
         }
@@ -72,7 +72,7 @@ class Store {
     ): List<Mail> {
         var messages: List<Message>
         var mails: List<Mail>
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             val term: SearchTerm = getSearchTerm(subjectFilter)
             messages = folder.search(term).toList()
 
