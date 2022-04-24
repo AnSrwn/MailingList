@@ -2,11 +2,14 @@ package com.example.mailinglist.model
 
 import android.text.Spanned
 import androidx.core.text.HtmlCompat
+import com.example.mailinglist.Application
+import com.example.mailinglist.CacheManager
 import jakarta.mail.Message
 import jakarta.mail.Multipart
 import jakarta.mail.Part
 import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeBodyPart
+import java.io.InputStream
 import java.util.*
 
 
@@ -15,34 +18,51 @@ open class Mail(
     val content: String,
     val sentDate: Date,
     val senderName: String?,
-    val replyToAddress: String
+    val replyToAddress: String,
+    val images: List<String>
 ) {
     companion object {
-        //TODO maybe use Builder or Factory Pattern instead?
         operator fun invoke(message: Message): Mail {
-            val content = getMessageTextContent(message)
-
             return Mail(
                 message.subject,
                 getContent(message) ?: "",
                 message.sentDate,
                 getSenderName(message),
-                getReplyToAddress(message)
+                getReplyToAddress(message),
+                getMessageImages(message)
             )
         }
 
-        private fun getMessageImages(message: Message) {
+        private fun getMessageImages(message: Message): List<String> {
+            val images: MutableList<String> = mutableListOf()
+
             if (message.contentType.contains("multipart")) {
                 val multiPart: Multipart = message.content as Multipart
 
                 for (i in 0 until multiPart.count) {
                     val part: MimeBodyPart = multiPart.getBodyPart(i) as MimeBodyPart
                     if (Part.ATTACHMENT.equals(part.disposition, true)) {
-                        val name = part.fileName
                         val type = part.contentType
+                        if (type.contains("image/jpeg")) {
+                            val input: InputStream = part.inputStream
+                            input.use {
+                                var imageName: String =
+                                    getReplyToAddress(message) + message.sentDate + UUID.randomUUID()
+                                        .toString() + ".jpg"
+                                imageName = imageName.replace(" ", "")
+                                val cacheManager = CacheManager()
+                                cacheManager.cacheData(
+                                    Application.context,
+                                    input.readBytes(),
+                                    imageName
+                                )
+                                images.add(imageName)
+                            }
+                        }
                     }
                 }
             }
+            return images
         }
 
         private fun getSenderName(message: Message): String? {

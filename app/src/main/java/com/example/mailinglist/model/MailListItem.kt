@@ -4,13 +4,14 @@ import java.util.*
 
 class MailListItem(
     subject: String, content: String, sentDate: Date,
-    senderName: String?, replyToAddress: String, var isExpanded: Boolean
+    senderName: String?, replyToAddress: String, images: List<String>, var isExpanded: Boolean
 ) : Mail(
     subject,
     content,
     sentDate,
     senderName,
-    replyToAddress
+    replyToAddress,
+    images
 ) {
     companion object {
         operator fun invoke(mail: Mail): MailListItem {
@@ -20,6 +21,7 @@ class MailListItem(
                 mail.sentDate,
                 mail.senderName,
                 mail.replyToAddress,
+                mail.images,
                 false
             )
         }

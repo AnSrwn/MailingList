@@ -7,12 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import com.example.mailinglist.Constants
 import com.example.mailinglist.R
 import com.example.mailinglist.model.MailListItem
 import com.example.mailinglist.utils.MailUtil.Companion.buildAnswerEmail
 import com.example.mailinglist.utils.TimeUtil
+
 
 class MailListAdapter(private val mails: List<MailListItem>) :
     RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
@@ -43,9 +47,25 @@ class MailListAdapter(private val mails: List<MailListItem>) :
             Regex("\\[\\w+]\\s+"),
             ""
         ) // remove mailList name, e.g. [abelana]
+
+        if (mailListItem.images.isNotEmpty()) {
+            holder.imageGalleryView.visibility = View.VISIBLE
+            val layoutManager: LinearLayoutManager =
+                LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
+            holder.imageGalleryView.layoutManager = layoutManager
+            holder.imageGalleryView.itemAnimator = null
+            val helper: SnapHelper = LinearSnapHelper()
+            helper.attachToRecyclerView(holder.imageGalleryView)
+            val adapter = ImageGalleryAdapter(mailListItem.images)
+            holder.imageGalleryView.adapter = adapter
+        } else {
+            holder.imageGalleryView.visibility = View.GONE
+        }
+
         holder.contentView.text = mailListItem.content
         if (mailListItem.senderName != null) holder.senderView.text =
             mailListItem.senderName else holder.senderView.visibility = View.GONE
+
         holder.dateView.text =
             TimeUtil.calculateElapsedTime(holder.itemView.context, mailListItem.sentDate)
 
@@ -95,6 +115,7 @@ class MailListAdapter(private val mails: List<MailListItem>) :
 
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val subjectView: TextView = itemView.findViewById(R.id.subjectView)
+        val imageGalleryView: RecyclerView = itemView.findViewById(R.id.imageGallery)
         val contentView: TextView = itemView.findViewById(R.id.contentView)
         val senderView: TextView = itemView.findViewById(R.id.senderView)
         val dateView: TextView = itemView.findViewById(R.id.dateView)
