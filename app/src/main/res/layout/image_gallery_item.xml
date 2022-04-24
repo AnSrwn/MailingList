@@ -9,6 +9,6 @@
         android:layout_height="match_parent"
         android:background="@color/grey"
         android:contentDescription="@string/images"
-        android:scaleType="centerInside" />
+        android:adjustViewBounds="true" />
 
 </LinearLayout>
