@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.Application
-import com.example.mailinglist.CacheManager
 import com.example.mailinglist.R
+import com.example.mailinglist.StorageManager
 
 
 class ImageGalleryAdapter(private val images: List<String>) :
@@ -23,7 +23,7 @@ class ImageGalleryAdapter(private val images: List<String>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val imageName: String = images[position]
-        val cacheManager = CacheManager()
+        val cacheManager = StorageManager()
         val image: ByteArray? = cacheManager.retrieveData(Application.context, imageName)
 
         if (image != null) {

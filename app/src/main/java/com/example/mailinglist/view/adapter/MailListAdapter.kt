@@ -54,8 +54,11 @@ class MailListAdapter(private val mails: List<MailListItem>) :
                 LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
             holder.imageGalleryView.layoutManager = layoutManager
             holder.imageGalleryView.itemAnimator = null
-            val helper: SnapHelper = LinearSnapHelper()
-            helper.attachToRecyclerView(holder.imageGalleryView)
+            if (holder.imageGalleryView.onFlingListener == null) {
+                val helper: SnapHelper = LinearSnapHelper()
+                helper.attachToRecyclerView(holder.imageGalleryView)
+
+            }
             val adapter = ImageGalleryAdapter(mailListItem.images)
             holder.imageGalleryView.adapter = adapter
         } else {

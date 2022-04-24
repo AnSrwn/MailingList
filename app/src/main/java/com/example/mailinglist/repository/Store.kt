@@ -9,10 +9,7 @@ import jakarta.mail.Message
 import jakarta.mail.MessagingException
 import jakarta.mail.Session
 import jakarta.mail.search.SearchTerm
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.*
 
 class Store {
@@ -71,16 +68,23 @@ class Store {
         subjectFilter: String
     ): List<Mail> {
         var messages: List<Message>
-        var mails: List<Mail>
+        val mails = mutableListOf<Deferred<Mail>>()
+
         withContext(Dispatchers.IO) {
             val term: SearchTerm = getSearchTerm(subjectFilter)
             messages = folder.search(term).toList()
 
-            mails = messages.map { message ->
-                Mail(message)
+            coroutineScope {
+                for (message in messages) {
+                    val mail = async {
+                        Mail(message)
+                    }
+                    mails.add(mail)
+                }
             }
         }
-        return mails
+
+        return mails.awaitAll()
     }
 
     private fun getSearchTerm(subjectFilter: String): SearchTerm {

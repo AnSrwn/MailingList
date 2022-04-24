@@ -1,15 +1,18 @@
 package com.example.mailinglist.model
 
-import android.text.Spanned
 import androidx.core.text.HtmlCompat
 import com.example.mailinglist.Application
-import com.example.mailinglist.CacheManager
+import com.example.mailinglist.Constants
+import com.example.mailinglist.StorageManager
 import jakarta.mail.Message
 import jakarta.mail.Multipart
 import jakarta.mail.Part
 import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeBodyPart
-import java.io.InputStream
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.util.*
 
 
@@ -22,47 +25,15 @@ open class Mail(
     val images: List<String>
 ) {
     companion object {
-        operator fun invoke(message: Message): Mail {
+        suspend operator fun invoke(message: Message): Mail {
             return Mail(
                 message.subject,
-                getContent(message) ?: "",
+                getTextFromMessage(message) ?: "",
                 message.sentDate,
                 getSenderName(message),
                 getReplyToAddress(message),
-                getMessageImages(message)
+                getImagesFromMessage(message)
             )
-        }
-
-        private fun getMessageImages(message: Message): List<String> {
-            val images: MutableList<String> = mutableListOf()
-
-            if (message.contentType.contains("multipart")) {
-                val multiPart: Multipart = message.content as Multipart
-
-                for (i in 0 until multiPart.count) {
-                    val part: MimeBodyPart = multiPart.getBodyPart(i) as MimeBodyPart
-                    if (Part.ATTACHMENT.equals(part.disposition, true)) {
-                        val type = part.contentType
-                        if (type.contains("image/jpeg")) {
-                            val input: InputStream = part.inputStream
-                            input.use {
-                                var imageName: String =
-                                    getReplyToAddress(message) + message.sentDate + UUID.randomUUID()
-                                        .toString() + ".jpg"
-                                imageName = imageName.replace(" ", "")
-                                val cacheManager = CacheManager()
-                                cacheManager.cacheData(
-                                    Application.context,
-                                    input.readBytes(),
-                                    imageName
-                                )
-                                images.add(imageName)
-                            }
-                        }
-                    }
-                }
-            }
-            return images
         }
 
         private fun getSenderName(message: Message): String? {
@@ -80,60 +51,93 @@ open class Mail(
             return (message.replyTo[0] as InternetAddress).address
         }
 
-        private fun getContent(part: Part): String? {
-            val content = getTextFromMessage(part)
+        private suspend fun getImagesFromMessage(message: Message): List<String> {
+            val images = mutableSetOf<Deferred<String>>()
 
-            return if (content.text == null) {
-                null
-            } else {
-                if (content.isHtml) {
-                    val text: Spanned =
-                        HtmlCompat.fromHtml(content.text!!, HtmlCompat.FROM_HTML_MODE_LEGACY)
-                    val stringText: String = text.toString()
-                    stringText.replace(Regex("\n\n+"), "\n").trim()
-                } else {
-                    content.text
+            if (message.isMimeType(Constants.MIME_TYPE_MULTIPART)) {
+                val multipart: Multipart = message.content as Multipart
+
+                coroutineScope {
+                    for (i in 0 until multipart.count) {
+                        val part: MimeBodyPart = multipart.getBodyPart(i) as MimeBodyPart
+
+                        if (Part.ATTACHMENT.equals(
+                                part.disposition,
+                                true
+                            ) && part.isMimeType(Constants.MIME_TYPE_IMAGE_JPEG)
+                        ) {
+                            val imageName = async {
+                                val name: String = createImageName(message, part.fileName)
+
+                                val cacheManager = StorageManager()
+                                cacheManager.cacheData(Application.context, part, name)
+
+
+                                name
+                            }
+
+                            images.add(imageName)
+                        }
+                    }
                 }
             }
+
+            return images.awaitAll()
         }
 
-        private fun getTextFromMessage(part: Part): MessageTextContent {
-            val mailContent = MessageTextContent(null, false)
-            if (part.isMimeType("text/*")) {
-                mailContent.text = part.content as String
-                mailContent.isHtml = part.isMimeType("text/html")
-                return mailContent
+        private fun createImageName(message: Message, fileName: String): String {
+            var name: String =
+                getReplyToAddress(message) + message.sentDate + fileName
+            name = name.replace(" ", "")
+            return name
+        }
+
+        private fun getTextFromMessage(part: Part): String? {
+            if (part.isMimeType(Constants.MIME_TYPE_TEXT_PLAIN)) {
+                return part.content as String
+            } else if (part.isMimeType(Constants.MIME_TYPE_TEXT_HTML)) {
+                val partContent = part.content as String
+                val text =
+                    HtmlCompat.fromHtml(partContent, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+                return text
+                    .replace(Regex("\n\n+"), "\n")
+                    .replace(Regex("<!--.* -->"), "")
+                    .trim()
             }
 
-            if (part.isMimeType("multipart/alternative")) {
-                // prefer html text over plain text
+            // Multipart/alternative means that there are multiple parts with the same content,
+            // but in different forms
+            // e.g. one part as plain text and the other as html
+            if (part.isMimeType(Constants.MIME_TYPE_MULTIPART_ALTERNATIVE)) {
                 val multipart = part.content as Multipart
-                var text: String? = null
+                var plainTextResult: String? = null
+
                 for (i in 0 until multipart.count) {
                     val bodyPart: Part = multipart.getBodyPart(i)
-                    if (bodyPart.isMimeType("text/plain")) {
-                        if (text == null) text = getTextFromMessage(bodyPart).text
+
+                    if (bodyPart.isMimeType(Constants.MIME_TYPE_TEXT_PLAIN)) {
+                        if (plainTextResult == null) plainTextResult = getTextFromMessage(bodyPart)
                         continue
-                    } else if (bodyPart.isMimeType("text/html")) {
-                        val mc = getTextFromMessage(bodyPart)
-                        if (mc.text != null) return mc
+                    } else if (bodyPart.isMimeType(Constants.MIME_TYPE_TEXT_HTML)) {
+                        val htmlResult = getTextFromMessage(bodyPart)
+                        if (htmlResult != null) return htmlResult
                     } else {
                         return getTextFromMessage(bodyPart)
                     }
                 }
-                mailContent.text = text
-                return mailContent
-            } else if (part.isMimeType("multipart/*")) {
+
+                return plainTextResult
+            } else if (part.isMimeType(Constants.MIME_TYPE_MULTIPART)) {
                 val multipart = part.content as Multipart
+
                 for (i in 0 until multipart.count) {
-                    val mc = getTextFromMessage(multipart.getBodyPart(i))
-                    if (mc.text != null) return mc
+                    val bodyPart: Part = multipart.getBodyPart(i)
+                    val result = getTextFromMessage(bodyPart)
+                    if (result != null) return result
                 }
             }
 
-            return mailContent
+            return null
         }
     }
-
-    data class MessageTextContent(var text: String?, var isHtml: Boolean)
 }
