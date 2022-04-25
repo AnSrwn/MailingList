@@ -32,15 +32,4 @@ class ImageGalleryAdapter(private val images: List<Bitmap>) :
     override fun getItemCount(): Int {
         return images.count()
     }
-
-//    private fun retrieveImage(imageName: String): Bitmap? {
-//        val cacheManager = StorageManager()
-//        val image: ByteArray? = cacheManager.retrieveData(Application.context, imageName)
-//
-//        if (image != null) {
-//            return BitmapFactory.decodeByteArray(image, 0, image.size)
-//        }
-//
-//        return null
-//    }
 }

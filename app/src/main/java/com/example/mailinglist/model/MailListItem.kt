@@ -19,20 +19,4 @@ class MailListItem(
     senderName,
     replyToAddress,
     imageNames
-) {
-    companion object {
-        operator fun invoke(mail: Mail): MailListItem {
-            return MailListItem(
-                mail.subject,
-                mail.content,
-                mail.sentDate,
-                mail.senderName,
-                mail.replyToAddress,
-                mail.imageNames,
-                emptyList(),
-                false
-            )
-        }
-    }
-
-}
+)
