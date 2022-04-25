@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.example.mailinglist.R
@@ -17,6 +16,7 @@ import com.example.mailinglist.domain.model.MailListItem
 import com.example.mailinglist.shared.Constants
 import com.example.mailinglist.shared.utils.MailListItemUtil.Companion.buildAnswerEmail
 import com.example.mailinglist.shared.utils.TimeUtil
+import com.example.mailinglist.ui.shared.SnapToPositionHelper
 import java.util.*
 
 
@@ -101,7 +101,7 @@ class MailListAdapter(private val mails: List<MailListItem>) :
         imageGalleryView.itemAnimator = null
 
         if (imageGalleryView.onFlingListener == null) {
-            val helper: SnapHelper = LinearSnapHelper()
+            val helper: SnapHelper = SnapToPositionHelper()
             helper.attachToRecyclerView(imageGalleryView)
         }
     }
