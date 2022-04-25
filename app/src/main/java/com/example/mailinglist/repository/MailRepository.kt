@@ -10,7 +10,7 @@ class MailRepository : MailService {
     override suspend fun getAllMails(): List<Mail> {
         return MainScope().async {
             val unsortedMails = Store().getMails(Constants.FOLDER_INBOX, "[abelana]")
-            return@async unsortedMails.sortedBy { mail -> mail.sentDate }
+            return@async (unsortedMails.sortedBy { mail -> mail.sentDate }).reversed()
         }.await()
     }
 }

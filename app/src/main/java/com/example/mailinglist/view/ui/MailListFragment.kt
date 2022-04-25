@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.R
-import com.example.mailinglist.model.MailListItem
 import com.example.mailinglist.view.adapter.MailListAdapter
 import com.example.mailinglist.viewmodel.MailListViewModel
 
@@ -29,11 +28,7 @@ class MailListFragment : Fragment(R.layout.fragment_mail_list) {
         listView.itemAnimator = null
 
         val model: MailListViewModel by viewModels()
-        model.getMails().observe(viewLifecycleOwner) { mails ->
-            val mailListItems = mails.map { mail ->
-                MailListItem(mail)
-            }
-
+        model.getMailListItems().observe(viewLifecycleOwner) { mailListItems ->
             val adapter = MailListAdapter(mailListItems)
             listView.adapter = adapter
         }
