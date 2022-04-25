@@ -1,18 +1,20 @@
 package com.example.mailinglist.view.adapter
 
-import android.graphics.BitmapFactory
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mailinglist.Application
 import com.example.mailinglist.R
-import com.example.mailinglist.StorageManager
 
 
-class ImageGalleryAdapter(private val images: List<String>) :
+class ImageGalleryAdapter(private val images: List<Bitmap>) :
     RecyclerView.Adapter<ImageGalleryAdapter.ViewHolder>() {
+
+    class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
+        val imageView: ImageView = itemView.findViewById(R.id.galleryItemImageView)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -22,26 +24,23 @@ class ImageGalleryAdapter(private val images: List<String>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val imageName: String = images[position]
-        val cacheManager = StorageManager()
-        val image: ByteArray? = cacheManager.retrieveData(Application.context, imageName)
-
-        if (image != null) {
-            val imageView = holder.imageView
-
-            val bitmap =
-                BitmapFactory.decodeByteArray(image, 0, image.size)
-            imageView.setImageBitmap(
-                bitmap
-            )
-        }
+        val image: Bitmap = images[position]
+        val imageView = holder.imageView
+        imageView.setImageBitmap(image)
     }
 
     override fun getItemCount(): Int {
         return images.count()
     }
 
-    class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.galleryItemImageView)
-    }
+//    private fun retrieveImage(imageName: String): Bitmap? {
+//        val cacheManager = StorageManager()
+//        val image: ByteArray? = cacheManager.retrieveData(Application.context, imageName)
+//
+//        if (image != null) {
+//            return BitmapFactory.decodeByteArray(image, 0, image.size)
+//        }
+//
+//        return null
+//    }
 }

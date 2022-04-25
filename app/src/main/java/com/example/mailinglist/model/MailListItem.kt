@@ -1,17 +1,24 @@
 package com.example.mailinglist.model
 
+import android.graphics.Bitmap
 import java.util.*
 
 class MailListItem(
-    subject: String, content: String, sentDate: Date,
-    senderName: String?, replyToAddress: String, images: List<String>, var isExpanded: Boolean
+    subject: String,
+    content: String,
+    sentDate: Date,
+    senderName: String?,
+    replyToAddress: String,
+    imageNames: List<String>,
+    var images: List<Bitmap>,
+    var isExpanded: Boolean
 ) : Mail(
     subject,
     content,
     sentDate,
     senderName,
     replyToAddress,
-    images
+    imageNames
 ) {
     companion object {
         operator fun invoke(mail: Mail): MailListItem {
@@ -21,7 +28,8 @@ class MailListItem(
                 mail.sentDate,
                 mail.senderName,
                 mail.replyToAddress,
-                mail.images,
+                mail.imageNames,
+                emptyList(),
                 false
             )
         }

@@ -22,12 +22,15 @@ open class Mail(
     val sentDate: Date,
     val senderName: String?,
     val replyToAddress: String,
-    val images: List<String>
+    val imageNames: List<String>
 ) {
     companion object {
         suspend operator fun invoke(message: Message): Mail {
             return Mail(
-                message.subject,
+                message.subject.replace(
+                    Regex("\\[\\w+]\\s+"),
+                    ""
+                ),
                 getTextFromMessage(message) ?: "",
                 message.sentDate,
                 getSenderName(message),

@@ -1,6 +1,7 @@
 package com.example.mailinglist.view.adapter
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -16,105 +17,12 @@ import com.example.mailinglist.R
 import com.example.mailinglist.model.MailListItem
 import com.example.mailinglist.utils.MailUtil.Companion.buildAnswerEmail
 import com.example.mailinglist.utils.TimeUtil
+import java.util.*
 
 
 class MailListAdapter(private val mails: List<MailListItem>) :
     RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
-    private var listView: RecyclerView? = null
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.mail_list_view_item, parent, false)
-
-        return ViewHolder(view)
-    }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        listView = recyclerView
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val mailListItem = mails[position]
-
-        setContentViewMaxLines(holder, mailListItem)
-        setExpandCollapseButtonText(holder, mailListItem)
-
-        holder.subjectView.text = mailListItem.subject.replace(
-            Regex("\\[\\w+]\\s+"),
-            ""
-        ) // remove mailList name, e.g. [abelana]
-
-        if (mailListItem.images.isNotEmpty()) {
-            holder.imageGalleryView.visibility = View.VISIBLE
-            val layoutManager: LinearLayoutManager =
-                LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
-            holder.imageGalleryView.layoutManager = layoutManager
-            holder.imageGalleryView.itemAnimator = null
-            if (holder.imageGalleryView.onFlingListener == null) {
-                val helper: SnapHelper = LinearSnapHelper()
-                helper.attachToRecyclerView(holder.imageGalleryView)
-
-            }
-            val adapter = ImageGalleryAdapter(mailListItem.images)
-            holder.imageGalleryView.adapter = adapter
-        } else {
-            holder.imageGalleryView.visibility = View.GONE
-        }
-
-        holder.contentView.text = mailListItem.content
-        if (mailListItem.senderName != null) holder.senderView.text =
-            mailListItem.senderName else holder.senderView.visibility = View.GONE
-
-        holder.dateView.text =
-            TimeUtil.calculateElapsedTime(holder.itemView.context, mailListItem.sentDate)
-
-        holder.expandCollapseButton.setOnClickListener {
-            val expanded = mailListItem.isExpanded
-            mailListItem.isExpanded = !expanded
-            notifyItemChanged(position)
-            if (expanded) listView?.smoothScrollToPosition(position)
-        }
-
-        holder.answerButton.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:")
-                putExtra(Intent.EXTRA_EMAIL, arrayOf(mailListItem.replyToAddress))
-                putExtra(Intent.EXTRA_SUBJECT, "Re: " + mailListItem.subject)
-                putExtra(Intent.EXTRA_TEXT, buildAnswerEmail(mailListItem))
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-
-            holder.itemView.context.startActivity(intent)
-        }
-    }
-
-    private fun setContentViewMaxLines(
-        holder: ViewHolder,
-        mailListItem: MailListItem
-    ) {
-        holder.contentView.maxLines =
-            if (mailListItem.isExpanded) Int.MAX_VALUE else Constants.CARD_MAX_LINES
-    }
-
-    private fun setExpandCollapseButtonText(
-        holder: ViewHolder,
-        mailListItem: MailListItem
-    ) {
-        holder.expandCollapseButton.text =
-            if (mailListItem.isExpanded) holder.itemView.context.resources.getString(
-                R.string.collapse
-            ) else holder.itemView.context.resources.getString(
-                R.string.expand
-            )
-    }
-
-    override fun getItemCount(): Int {
-        return mails.size
-    }
+    private var mailListView: RecyclerView? = null
 
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val subjectView: TextView = itemView.findViewById(R.id.subjectView)
@@ -124,5 +32,118 @@ class MailListAdapter(private val mails: List<MailListItem>) :
         val dateView: TextView = itemView.findViewById(R.id.dateView)
         val expandCollapseButton: Button = itemView.findViewById(R.id.expandCollapseButton)
         val answerButton: Button = itemView.findViewById(R.id.answerButton)
+    }
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.mail_list_view_item, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        mailListView = recyclerView
+    }
+
+    override fun getItemCount(): Int {
+        return mails.size
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val mailListItem = mails[position]
+
+        bindSubject(holder.subjectView, mailListItem.subject)
+        bindSenderName(holder.senderView, mailListItem.senderName)
+        bindContent(holder.contentView, mailListItem.content, mailListItem.isExpanded)
+        bindImages(holder.imageGalleryView, mailListItem.images)
+        bindDate(holder.dateView, mailListItem.sentDate)
+
+        bindExpandCollapseButton(holder.expandCollapseButton, mailListItem, position)
+        bindAnswerButton(holder.answerButton, mailListItem)
+    }
+
+    private fun bindSubject(subjectView: TextView, subject: String) {
+        subjectView.text = subject
+    }
+
+    private fun bindSenderName(senderView: TextView, senderName: String?) {
+        if (senderName != null) senderView.text =
+            senderName else senderView.visibility = View.GONE
+    }
+
+    private fun bindContent(contentView: TextView, content: String, isExpanded: Boolean) {
+        contentView.maxLines =
+            if (isExpanded) Int.MAX_VALUE else Constants.CARD_MAX_LINES
+
+        contentView.text = content
+    }
+
+    private fun bindImages(imageGalleryView: RecyclerView, images: List<Bitmap>) {
+        if (images.isNotEmpty()) {
+            imageGalleryView.visibility = View.VISIBLE
+            prepareImageGalleryView(imageGalleryView)
+
+            val adapter = ImageGalleryAdapter(images)
+            imageGalleryView.adapter = adapter
+        } else {
+            imageGalleryView.visibility = View.GONE
+        }
+    }
+
+    private fun prepareImageGalleryView(imageGalleryView: RecyclerView) {
+        val layoutManager =
+            LinearLayoutManager(imageGalleryView.context, LinearLayoutManager.HORIZONTAL, false)
+
+        imageGalleryView.layoutManager = layoutManager
+        imageGalleryView.itemAnimator = null
+
+        if (imageGalleryView.onFlingListener == null) {
+            val helper: SnapHelper = LinearSnapHelper()
+            helper.attachToRecyclerView(imageGalleryView)
+        }
+    }
+
+    private fun bindDate(dateView: TextView, sentDate: Date) {
+        dateView.text = TimeUtil.calculateElapsedTime(dateView.context, sentDate)
+    }
+
+    private fun bindExpandCollapseButton(
+        expandCollapseButton: Button,
+        mailListItem: MailListItem,
+        position: Int
+    ) {
+        expandCollapseButton.text =
+            if (mailListItem.isExpanded) expandCollapseButton.context.resources.getString(
+                R.string.collapse
+            ) else expandCollapseButton.context.resources.getString(
+                R.string.expand
+            )
+
+        expandCollapseButton.setOnClickListener {
+            val expanded = mailListItem.isExpanded
+            mailListItem.isExpanded = !expanded
+            notifyItemChanged(position)
+            if (expanded) mailListView?.smoothScrollToPosition(position)
+        }
+    }
+
+    private fun bindAnswerButton(
+        answerButton: Button,
+        mailListItem: MailListItem
+    ) {
+        answerButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(mailListItem.replyToAddress))
+                putExtra(Intent.EXTRA_SUBJECT, "Re: " + mailListItem.subject)
+                putExtra(Intent.EXTRA_TEXT, buildAnswerEmail(mailListItem))
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            answerButton.context.startActivity(intent)
+        }
     }
 }
