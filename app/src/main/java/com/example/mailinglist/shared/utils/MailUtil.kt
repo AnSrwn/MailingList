@@ -1,10 +1,10 @@
-package com.example.mailinglist.utils
+package com.example.mailinglist.shared.utils
 
-import com.example.mailinglist.model.Mail
+import com.example.mailinglist.domain.model.MailListItem
 
-class MailUtil {
+class MailListItemUtil {
     companion object {
-        fun buildAnswerEmail(originalMail: Mail): String {
+        fun buildAnswerEmail(originalMail: MailListItem): String {
             val replyToName = originalMail.senderName
             return if (replyToName != null) "Hallo $replyToName,\n\n" else ""
 

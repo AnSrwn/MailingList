@@ -1,4 +1,4 @@
-package com.example.mailinglist.utils
+package com.example.mailinglist.shared.utils
 
 import android.content.Context
 import com.example.mailinglist.R

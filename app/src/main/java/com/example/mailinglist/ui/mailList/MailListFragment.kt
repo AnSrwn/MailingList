@@ -1,4 +1,4 @@
-package com.example.mailinglist.view.ui
+package com.example.mailinglist.ui.mailList
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,9 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.R
-import com.example.mailinglist.model.MailListItem
-import com.example.mailinglist.view.adapter.MailListAdapter
-import com.example.mailinglist.viewmodel.MailListViewModel
+import com.example.mailinglist.ui.shared.adapter.MailListAdapter
 
 class MailListFragment : Fragment(R.layout.fragment_mail_list) {
     override fun onCreateView(
@@ -29,11 +27,7 @@ class MailListFragment : Fragment(R.layout.fragment_mail_list) {
         listView.itemAnimator = null
 
         val model: MailListViewModel by viewModels()
-        model.getMails().observe(viewLifecycleOwner) { mails ->
-            val mailListItems = mails.map { mail ->
-                MailListItem(mail)
-            }
-
+        model.getMailListItems().observe(viewLifecycleOwner) { mailListItems ->
             val adapter = MailListAdapter(mailListItems)
             listView.adapter = adapter
         }
