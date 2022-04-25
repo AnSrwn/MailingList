@@ -1,4 +1,4 @@
-package com.example.mailinglist.view.adapter
+package com.example.mailinglist.ui.shared.adapter
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
-import com.example.mailinglist.Constants
 import com.example.mailinglist.R
-import com.example.mailinglist.model.MailListItem
-import com.example.mailinglist.utils.MailUtil.Companion.buildAnswerEmail
-import com.example.mailinglist.utils.TimeUtil
+import com.example.mailinglist.domain.model.MailListItem
+import com.example.mailinglist.shared.Constants
+import com.example.mailinglist.shared.utils.MailListItemUtil.Companion.buildAnswerEmail
+import com.example.mailinglist.shared.utils.TimeUtil
 import java.util.*
 
 

@@ -1,10 +1,12 @@
-package com.example.mailinglist.repository
+package com.example.mailinglist.data.repository
 
 import com.example.mailinglist.Application
-import com.example.mailinglist.Constants
-import com.example.mailinglist.StorageManager
-import com.example.mailinglist.model.Mail
-import com.example.mailinglist.utils.MessageUtil
+import com.example.mailinglist.data.model.Mail
+import com.example.mailinglist.data.network.Folder
+import com.example.mailinglist.data.network.Store
+import com.example.mailinglist.shared.Constants
+import com.example.mailinglist.shared.StorageManager
+import com.example.mailinglist.shared.utils.MessageUtil
 import jakarta.mail.Message
 import jakarta.mail.Part
 import kotlinx.coroutines.*

@@ -1,4 +1,4 @@
-package com.example.mailinglist.viewmodel
+package com.example.mailinglist.ui.mailList
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -6,10 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.mailinglist.Application
-import com.example.mailinglist.StorageManager
-import com.example.mailinglist.model.Mail
-import com.example.mailinglist.model.MailListItem
-import com.example.mailinglist.repository.MailRepository
+import com.example.mailinglist.data.model.Mail
+import com.example.mailinglist.data.repository.MailRepository
+import com.example.mailinglist.domain.model.MailListItem
+import com.example.mailinglist.shared.StorageManager
 
 
 class MailListViewModel : ViewModel() {
@@ -25,7 +25,6 @@ class MailListViewModel : ViewModel() {
                 mail.sentDate,
                 mail.senderName,
                 mail.replyToAddress,
-                mail.imageNames,
                 images,
                 false
             )

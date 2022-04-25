@@ -1,4 +1,4 @@
-package com.example.mailinglist.model
+package com.example.mailinglist.data.model
 
 import java.util.*
 

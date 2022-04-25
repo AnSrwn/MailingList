@@ -1,4 +1,4 @@
-package com.example.mailinglist.repository
+package com.example.mailinglist.data.network
 
 import com.sun.mail.imap.IMAPStore
 import jakarta.mail.Message

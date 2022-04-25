@@ -1,7 +1,7 @@
-package com.example.mailinglist.repository
+package com.example.mailinglist.data.network
 
 import com.example.mailinglist.BuildConfig
-import com.example.mailinglist.Constants
+import com.example.mailinglist.shared.Constants
 import com.sun.mail.imap.IMAPStore
 import jakarta.mail.Session
 import kotlinx.coroutines.Dispatchers

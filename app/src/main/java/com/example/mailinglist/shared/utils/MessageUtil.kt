@@ -1,7 +1,7 @@
-package com.example.mailinglist.utils
+package com.example.mailinglist.shared.utils
 
 import androidx.core.text.HtmlCompat
-import com.example.mailinglist.Constants
+import com.example.mailinglist.shared.Constants
 import jakarta.mail.Message
 import jakarta.mail.Multipart
 import jakarta.mail.Part

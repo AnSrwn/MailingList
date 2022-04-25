@@ -1,4 +1,4 @@
-package com.example.mailinglist.view.adapter
+package com.example.mailinglist.ui.shared.adapter
 
 import android.graphics.Bitmap
 import android.view.LayoutInflater

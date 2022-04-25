@@ -1,4 +1,4 @@
-package com.example.mailinglist
+package com.example.mailinglist.shared
 
 import android.content.Context
 import jakarta.mail.Part
