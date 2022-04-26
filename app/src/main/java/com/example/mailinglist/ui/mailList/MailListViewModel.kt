@@ -3,6 +3,7 @@ package com.example.mailinglist.ui.mailList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.mailinglist.Application
@@ -10,30 +11,66 @@ import com.example.mailinglist.data.model.Mail
 import com.example.mailinglist.data.repository.MailRepository
 import com.example.mailinglist.domain.model.MailListItem
 import com.example.mailinglist.shared.StorageManager
+import com.example.mailinglist.shared.notifyObserver
 
 
 class MailListViewModel : ViewModel() {
-    private val mailListItems: LiveData<List<MailListItem>> = liveData {
-        val mailRepository = MailRepository()
-        val mails: List<Mail> = mailRepository.getAllMails()
-        val data = mails.map { mail ->
+    private var mailListItems = MutableLiveData<MutableList<MailListItem>>(mutableListOf())
+    private var pageCount: Int? = null
+    private var pageIndex: Int = -1
+
+    var isLastPage: Boolean = false
+    var isLoading: Boolean = false
+
+    fun getInitialData(): LiveData<MutableList<MailListItem>> {
+        return if (mailListItems.value != null && mailListItems.value!!.isNotEmpty()) {
+            mailListItems
+        } else {
+            getNextPage()
+        }
+    }
+
+    fun getNextPage(): LiveData<MutableList<MailListItem>> {
+        return liveData {
+            val mailRepository = MailRepository()
+
+            pageIndex += 1
+
+            if (pageCount == null) {
+                pageCount = mailRepository.getPageCount()
+            }
+
+            if (pageIndex >= pageCount!!) isLastPage = true
+
+            if (isLastPage) {
+                emit(mutableListOf())
+            } else {
+                val mails: List<Mail> = mailRepository.getMails(pageIndex)
+                val listItems: MutableList<MailListItem> = convertToMailListItems(mails)
+
+                mailListItems.value?.addAll(listItems)
+                mailListItems.notifyObserver()
+
+                emit(listItems)
+            }
+        }
+    }
+
+    private fun convertToMailListItems(mails: List<Mail>): MutableList<MailListItem> {
+        val listItems: MutableList<MailListItem> = mails.map { mail ->
             val images = retrieveImages(mail)
 
             MailListItem(
                 mail.subject,
                 mail.content,
-                mail.sentDate,
+                mail.receivedDate,
                 mail.senderName,
                 mail.replyToAddress,
                 images,
                 false
             )
-        }
-        emit(data)
-    }
-
-    fun getMailListItems(): LiveData<List<MailListItem>> {
-        return mailListItems
+        }.toMutableList()
+        return listItems
     }
 
     private fun retrieveImages(mail: Mail): MutableList<Bitmap> {

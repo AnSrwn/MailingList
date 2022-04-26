@@ -1,17 +1,17 @@
 package com.example.mailinglist.data.network
 
+import com.example.mailinglist.shared.Constants
 import com.sun.mail.imap.IMAPStore
 import jakarta.mail.Message
-import jakarta.mail.MessagingException
-import jakarta.mail.search.SearchTerm
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import kotlin.math.ceil
 
-class Folder private constructor(private val folder: jakarta.mail.Folder) {
+class Folder private constructor(private val jakartaFolder: jakarta.mail.Folder) {
+    private var messageCount = 0
+    private var pageCount = 0
+
     companion object {
-        const val SUBJECT_FILTER = "[abelana]"
-
         suspend operator fun invoke(store: IMAPStore, folderName: String): Folder {
             val folder = withContext(Dispatchers.IO) {
                 getFolder(store, folderName)
@@ -34,44 +34,44 @@ class Folder private constructor(private val folder: jakarta.mail.Folder) {
 
     }
 
-    suspend fun getAllMessages(
-    ): List<Message> {
-        return withContext(Dispatchers.IO) {
-            getFilteredSortedMessagesOfFolder(folder, SUBJECT_FILTER)
-        }
-    }
-
-    private suspend fun getFilteredSortedMessagesOfFolder(
-        folder: jakarta.mail.Folder,
-        subjectFilter: String
-    ): List<Message> {
+    suspend fun getMessages(pageIndex: Int): List<Message> {
         var messages: List<Message>
 
         withContext(Dispatchers.IO) {
-            val term: SearchTerm = getSearchTerm(subjectFilter)
-            messages = folder.search(term).toList()
+            getPageCount()
 
-            coroutineScope {
-                messages = messages.sortedByDescending { message -> message.sentDate }
+            if (pageIndex < 0 || pageIndex > pageCount) {
+                throw IndexOutOfBoundsException()
             }
+
+            val messageStartIndex = calculateStartIndex(pageIndex)
+            val messageEndIndex = calculateEndIndex(messageStartIndex)
+
+            messages = jakartaFolder
+                .getMessages(messageEndIndex, messageStartIndex)
+                .toList()
+                .filter { message -> message.subject.contains(Constants.SUBJECT_FILTER) }
+                .sortedByDescending { message -> message.receivedDate }
         }
 
         return messages
     }
 
-    private fun getSearchTerm(subjectFilter: String): SearchTerm {
-        val term: SearchTerm = object : SearchTerm() {
-            override fun match(message: Message): Boolean {
-                try {
-                    if (message.subject.contains(subjectFilter)) {
-                        return true
-                    }
-                } catch (e: MessagingException) {
-                    e.printStackTrace()
-                }
-                return false
-            }
+    private fun calculateEndIndex(messageStartIndex: Int): Int {
+        var messageEndIndex = messageStartIndex - Constants.PAGE_SIZE + 1
+        if (messageEndIndex < 1) messageEndIndex = 1
+        return messageEndIndex
+    }
+
+    private fun calculateStartIndex(pageIndex: Int): Int {
+        return messageCount - pageIndex * Constants.PAGE_SIZE
+    }
+
+    suspend fun getPageCount(): Int {
+        withContext(Dispatchers.IO) {
+            messageCount = jakartaFolder.messageCount
         }
-        return term
+        pageCount = ceil((messageCount.toDouble() / Constants.PAGE_SIZE.toDouble())).toInt()
+        return pageCount
     }
 }
