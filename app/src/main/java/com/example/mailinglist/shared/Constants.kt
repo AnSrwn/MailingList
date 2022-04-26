@@ -7,7 +7,9 @@ class Constants {
         const val IMAP_HOST_Lima = "mail.lima-city.de"
         const val SESSION_PROP_SSL_ENABLE = "mail.imap.ssl.enable"
         const val FOLDER_INBOX = "INBOX"
+        const val SUBJECT_FILTER = "[abelana]"
 
+        const val PAGE_SIZE = 10
         const val CARD_MAX_LINES = 5
 
         const val MIME_TYPE_TEXT = "text/*"

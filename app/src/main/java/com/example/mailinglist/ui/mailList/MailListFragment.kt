@@ -24,17 +24,36 @@ class MailListFragment : Fragment(R.layout.fragment_mail_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val model: MailListViewModel by viewModels()
-
         val progressIndicatorTop =
             view.findViewById<CircularProgressIndicator>(R.id.progressIndicatorTop)
+
+        val model: MailListViewModel by viewModels()
+        val listView = getPaginatedListView(view, model)
+
+        model.isLoading = true
+        progressIndicatorTop.visibility = View.VISIBLE
+        model.getInitialData().observe(viewLifecycleOwner) { mailListItems ->
+            model.isLoading = false
+            progressIndicatorTop.visibility = View.INVISIBLE
+
+            val adapter = MailListAdapter(mailListItems)
+            listView.adapter = adapter
+        }
+
+    }
+
+    private fun getPaginatedListView(
+        view: View,
+        model: MailListViewModel
+    ): RecyclerView {
         val progressIndicatorBottom =
             view.findViewById<CircularProgressIndicator>(R.id.progressIndicatorBottom)
-
         val listView = view.findViewById<RecyclerView>(R.id.mailListView)
+
         val layoutManager = LinearLayoutManager(activity)
         listView.layoutManager = layoutManager
         listView.itemAnimator = null
+
         listView.addOnScrollListener((object : PaginationScrollListener(layoutManager) {
             override fun isLastPage(): Boolean {
                 return model.isLastPage
@@ -47,22 +66,16 @@ class MailListFragment : Fragment(R.layout.fragment_mail_list) {
             override fun loadMoreItems() {
                 model.isLoading = true
                 progressIndicatorBottom.visibility = View.VISIBLE
+
                 model.getNextPage().observe(viewLifecycleOwner) { mailListItems ->
                     model.isLoading = false
                     progressIndicatorBottom.visibility = View.INVISIBLE
+
                     (listView.adapter as MailListAdapter).addItems(mailListItems)
                 }
             }
         }))
 
-        model.isLoading = true
-        model.getNextPage().observe(viewLifecycleOwner) { mailListItems ->
-            model.isLoading = false
-            progressIndicatorTop.visibility = View.INVISIBLE
-            val adapter = MailListAdapter(mailListItems)
-            listView.adapter = adapter
-        }
-
+        return listView
     }
-
 }

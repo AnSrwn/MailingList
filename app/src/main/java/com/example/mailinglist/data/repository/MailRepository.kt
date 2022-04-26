@@ -24,7 +24,7 @@ class MailRepository private constructor(private val inboxFolder: Folder) : Mail
     }
 
     override suspend fun getPageCount(): Int {
-        var pageCount = 0
+        var pageCount: Int
         withContext(Dispatchers.IO) {
             pageCount = inboxFolder.getPageCount()
         }
@@ -37,33 +37,6 @@ class MailRepository private constructor(private val inboxFolder: Folder) : Mail
 
         withContext(Dispatchers.IO) {
             val messages = inboxFolder.getMessages(pageIndex)
-
-            for (message in messages) {
-                val mail = async {
-                    val imagesParts = MessageUtil.getImagePartsFromMessage(message)
-                    val imageNames = storeImageParts(message, imagesParts)
-
-                    Mail(
-                        MessageUtil.getSubjectFromMessage(message),
-                        MessageUtil.getContentFromMessage(message) ?: "",
-                        message.receivedDate,
-                        MessageUtil.getSenderNameFromMessage(message),
-                        MessageUtil.getReplyToAddressFromMessage(message),
-                        imageNames
-                    )
-                }
-                mails.add(mail)
-            }
-        }
-
-        return mails.awaitAll()
-    }
-
-    override suspend fun getAllMails(): List<Mail> {
-        val mails = mutableListOf<Deferred<Mail>>()
-
-        withContext(Dispatchers.IO) {
-            val messages = inboxFolder.getAllMessages()
 
             for (message in messages) {
                 val mail = async {
