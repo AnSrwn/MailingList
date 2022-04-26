@@ -9,7 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mailinglist.R
+import com.example.mailinglist.ui.shared.PaginationScrollListener
 import com.example.mailinglist.ui.shared.adapter.MailListAdapter
+import com.google.android.material.progressindicator.CircularProgressIndicator
 
 class MailListFragment : Fragment(R.layout.fragment_mail_list) {
     override fun onCreateView(
@@ -22,14 +24,45 @@ class MailListFragment : Fragment(R.layout.fragment_mail_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val listView = view.findViewById<RecyclerView>(R.id.mailListView)
-        listView.layoutManager = LinearLayoutManager(activity)
-        listView.itemAnimator = null
-
         val model: MailListViewModel by viewModels()
-        model.getMailListItems().observe(viewLifecycleOwner) { mailListItems ->
+
+        val progressIndicatorTop =
+            view.findViewById<CircularProgressIndicator>(R.id.progressIndicatorTop)
+        val progressIndicatorBottom =
+            view.findViewById<CircularProgressIndicator>(R.id.progressIndicatorBottom)
+
+        val listView = view.findViewById<RecyclerView>(R.id.mailListView)
+        val layoutManager = LinearLayoutManager(activity)
+        listView.layoutManager = layoutManager
+        listView.itemAnimator = null
+        listView.addOnScrollListener((object : PaginationScrollListener(layoutManager) {
+            override fun isLastPage(): Boolean {
+                return model.isLastPage
+            }
+
+            override fun isLoading(): Boolean {
+                return model.isLoading
+            }
+
+            override fun loadMoreItems() {
+                model.isLoading = true
+                progressIndicatorBottom.visibility = View.VISIBLE
+                model.getNextPage().observe(viewLifecycleOwner) { mailListItems ->
+                    model.isLoading = false
+                    progressIndicatorBottom.visibility = View.INVISIBLE
+                    (listView.adapter as MailListAdapter).addItems(mailListItems)
+                }
+            }
+        }))
+
+        model.isLoading = true
+        model.getNextPage().observe(viewLifecycleOwner) { mailListItems ->
+            model.isLoading = false
+            progressIndicatorTop.visibility = View.INVISIBLE
             val adapter = MailListAdapter(mailListItems)
             listView.adapter = adapter
         }
+
     }
+
 }

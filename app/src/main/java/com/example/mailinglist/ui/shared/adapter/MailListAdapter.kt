@@ -20,7 +20,7 @@ import com.example.mailinglist.ui.shared.SnapToPositionHelper
 import java.util.*
 
 
-class MailListAdapter(private val mails: List<MailListItem>) :
+class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
     RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
     private var mailListView: RecyclerView? = null
 
@@ -49,20 +49,27 @@ class MailListAdapter(private val mails: List<MailListItem>) :
     }
 
     override fun getItemCount(): Int {
-        return mails.size
+        return mailListItems.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val mailListItem = mails[position]
+        val mailListItem = mailListItems[position]
 
         bindSubject(holder.subjectView, mailListItem.subject)
         bindSenderName(holder.senderView, mailListItem.senderName)
         bindContent(holder.contentView, mailListItem.content, mailListItem.isExpanded)
         bindImages(holder.imageGalleryView, mailListItem.images)
-        bindDate(holder.dateView, mailListItem.sentDate)
+        bindDate(holder.dateView, mailListItem.receivedDate)
 
         bindExpandCollapseButton(holder.expandCollapseButton, mailListItem, position)
         bindAnswerButton(holder.answerButton, mailListItem)
+    }
+
+    fun addItems(items: List<MailListItem>) {
+        val size = mailListItems.size
+        mailListItems.addAll(items)
+        val sizeNew = mailListItems.size
+        notifyItemChanged(size, sizeNew)
     }
 
     private fun bindSubject(subjectView: TextView, subject: String) {
@@ -103,6 +110,7 @@ class MailListAdapter(private val mails: List<MailListItem>) :
         if (imageGalleryView.onFlingListener == null) {
             val helper: SnapHelper = SnapToPositionHelper()
             helper.attachToRecyclerView(imageGalleryView)
+
         }
     }
 

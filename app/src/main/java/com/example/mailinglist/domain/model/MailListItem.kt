@@ -6,7 +6,7 @@ import java.util.*
 class MailListItem(
     val subject: String,
     val content: String,
-    val sentDate: Date,
+    val receivedDate: Date,
     val senderName: String?,
     val replyToAddress: String,
     val images: List<Bitmap>,
