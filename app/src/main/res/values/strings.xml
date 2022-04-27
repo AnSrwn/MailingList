@@ -5,6 +5,7 @@
     <string name="expand">mehr</string>
     <string name="collapse">weniger</string>
     <string name="images">Bilder</string>
+    <string name="logo">Logo</string>
 
     <string name="time_period_prefix">Vor</string>
     <string name="year">Jahr</string>
