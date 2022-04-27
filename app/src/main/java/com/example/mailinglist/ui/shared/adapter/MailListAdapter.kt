@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
@@ -32,6 +34,7 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
         val dateView: TextView = itemView.findViewById(R.id.dateView)
         val expandCollapseButton: Button = itemView.findViewById(R.id.expandCollapseButton)
         val answerButton: Button = itemView.findViewById(R.id.answerButton)
+        val contentLayout: LinearLayout = itemView.findViewById(R.id.contentLayout)
     }
 
     override fun onCreateViewHolder(
@@ -57,11 +60,21 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
 
         bindSubject(holder.subjectView, mailListItem.subject)
         bindSenderName(holder.senderView, mailListItem.senderName)
-        bindContent(holder.contentView, mailListItem.content, mailListItem.isExpanded)
+        bindContent(
+            holder.contentView,
+            holder.contentLayout,
+            mailListItem.content,
+            mailListItem.isExpanded
+        )
         bindImages(holder.imageGalleryView, mailListItem.images)
         bindDate(holder.dateView, mailListItem.receivedDate)
 
-        bindExpandCollapseButton(holder.expandCollapseButton, mailListItem, position)
+        bindExpandCollapseButton(
+            holder.expandCollapseButton,
+            mailListItem,
+            position,
+            holder.contentView
+        )
         bindAnswerButton(holder.answerButton, mailListItem)
     }
 
@@ -81,11 +94,24 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
             senderName else senderView.visibility = View.GONE
     }
 
-    private fun bindContent(contentView: TextView, content: String, isExpanded: Boolean) {
+    private fun bindContent(
+        contentView: TextView,
+        contentLayout: LinearLayout,
+        content: String,
+        isExpanded: Boolean
+    ) {
         contentView.maxLines =
             if (isExpanded) Int.MAX_VALUE else Constants.CARD_MAX_LINES
 
         contentView.text = content
+
+        contentView.doOnPreDraw {
+            // not optimal, because one-lines are getting removed
+            // but so far there is no other way to remove empty content
+            if (contentView.lineCount <= 1) {
+                contentLayout.visibility = View.GONE
+            }
+        }
     }
 
     private fun bindImages(imageGalleryView: RecyclerView, images: List<Bitmap>) {
@@ -121,8 +147,15 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
     private fun bindExpandCollapseButton(
         expandCollapseButton: Button,
         mailListItem: MailListItem,
-        position: Int
+        position: Int,
+        contentView: TextView
     ) {
+        contentView.doOnPreDraw {
+            if (contentView.lineCount <= Constants.CARD_MAX_LINES) {
+                expandCollapseButton.visibility = View.GONE
+            }
+        }
+
         expandCollapseButton.text =
             if (mailListItem.isExpanded) expandCollapseButton.context.resources.getString(
                 R.string.collapse
