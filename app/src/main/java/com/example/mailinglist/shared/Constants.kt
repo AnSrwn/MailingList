@@ -9,6 +9,8 @@ class Constants {
         const val FOLDER_INBOX = "INBOX"
         const val SUBJECT_FILTER = "[abelana]"
 
+        const val ABELANA_MAIL_ADDRESS = "abelana@lists.riseup.net"
+
         const val PAGE_SIZE = 10
         const val CARD_MAX_LINES = 5
 

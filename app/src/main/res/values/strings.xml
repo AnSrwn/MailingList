@@ -2,10 +2,14 @@
     <string name="app_name">MailingList</string>
 
     <string name="answer">Antworten</string>
+    <string name="add_new">Neu</string>
     <string name="expand">mehr</string>
     <string name="collapse">weniger</string>
     <string name="images">Bilder</string>
     <string name="logo">Logo</string>
+
+    <string name="emailToList">Hallo liebe Liste,\n\n</string>
+    <string name="answerEmail">Hallo %1$s,</string>
 
     <string name="time_period_prefix">Vor</string>
     <string name="year">Jahr</string>

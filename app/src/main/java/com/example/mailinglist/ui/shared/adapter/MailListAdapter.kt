@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.SnapHelper
 import com.example.mailinglist.R
 import com.example.mailinglist.domain.model.MailListItem
 import com.example.mailinglist.shared.Constants
-import com.example.mailinglist.shared.utils.MailListItemUtil.Companion.buildAnswerEmail
 import com.example.mailinglist.shared.utils.TimeUtil
 import com.example.mailinglist.ui.shared.SnapToPositionHelper
 import java.util.*
@@ -180,7 +179,13 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
                 data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(mailListItem.replyToAddress))
                 putExtra(Intent.EXTRA_SUBJECT, "Re: " + mailListItem.subject)
-                putExtra(Intent.EXTRA_TEXT, buildAnswerEmail(mailListItem))
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    answerButton.context.resources.getString(
+                        R.string.answerEmail,
+                        mailListItem.senderName ?: ""
+                    )
+                )
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
 
