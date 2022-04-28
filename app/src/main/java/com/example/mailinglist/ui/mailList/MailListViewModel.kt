@@ -8,10 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.mailinglist.Application
 import com.example.mailinglist.data.model.Mail
-import com.example.mailinglist.data.repository.MailRepository
-import com.example.mailinglist.domain.model.MailListItem
+import com.example.mailinglist.data.repository.mail.MailRepositoryImpl
 import com.example.mailinglist.shared.StorageManager
 import com.example.mailinglist.shared.notifyObserver
+import com.example.mailinglist.ui.model.MailListItem
 
 
 class MailListViewModel : ViewModel() {
@@ -32,7 +32,7 @@ class MailListViewModel : ViewModel() {
 
     fun getNextPage(): LiveData<MutableList<MailListItem>> {
         return liveData {
-            val mailRepository = MailRepository()
+            val mailRepository = MailRepositoryImpl()
 
             pageIndex += 1
 

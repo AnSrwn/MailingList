@@ -1,4 +1,4 @@
-package com.example.mailinglist.shared.utils
+package com.example.mailinglist.data.remote.jakarta
 
 import androidx.core.text.HtmlCompat
 import com.example.mailinglist.shared.Constants

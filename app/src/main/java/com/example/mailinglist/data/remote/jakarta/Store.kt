@@ -1,4 +1,4 @@
-package com.example.mailinglist.data.network
+package com.example.mailinglist.data.remote.jakarta
 
 import com.example.mailinglist.BuildConfig
 import com.example.mailinglist.shared.Constants

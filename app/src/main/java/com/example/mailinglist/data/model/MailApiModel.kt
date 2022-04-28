@@ -1,14 +1,13 @@
-package com.example.mailinglist.domain.model
+package com.example.mailinglist.data.model
 
-import android.graphics.Bitmap
+import jakarta.mail.Part
 import java.util.*
 
-class MailListItem(
+data class MailApiModel(
     val subject: String,
     val content: String,
     val receivedDate: Date,
     val senderName: String?,
     val replyToAddress: String,
-    val images: List<Bitmap>,
-    var isExpanded: Boolean
-)
+    val images: List<Part>
+) {}

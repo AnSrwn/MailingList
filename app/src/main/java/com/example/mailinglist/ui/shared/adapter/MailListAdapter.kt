@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.example.mailinglist.R
-import com.example.mailinglist.domain.model.MailListItem
 import com.example.mailinglist.shared.Constants
 import com.example.mailinglist.shared.utils.TimeUtil
+import com.example.mailinglist.ui.model.MailListItem
 import com.example.mailinglist.ui.shared.SnapToPositionHelper
 import java.util.*
 
