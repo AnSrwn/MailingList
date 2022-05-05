@@ -11,7 +11,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 import jakarta.mail.Session
 import kotlinx.coroutines.Dispatchers
@@ -31,52 +30,46 @@ annotation class MailApi
 annotation class IMAPStore
 
 @Module
-@InstallIn(ViewModelComponent::class)
-abstract class RepositoryModule {
+@InstallIn(SingletonComponent::class)
+abstract class RemoteModule {
     @Binds
     @com.example.mailinglist.di.MailRepository
     abstract fun bindMailRepository(mailRepositoryImpl: MailRepositoryImpl): MailRepository
-}
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class MailApiModule {
     @Binds
     @com.example.mailinglist.di.MailApi
     abstract fun bindMailApi(mailApiImpl: MailApiImpl): MailApi
-}
 
-@Module
-@InstallIn(SingletonComponent::class)
-object StoreModule {
-    @Singleton
-    @Provides
-    @com.example.mailinglist.di.IMAPStore
-    fun provideIMAPStore(): IMAPStore {
-        val mailSession: Session = getSession()
-        val store = mailSession.getStore(Constants.STORE_TYPE) as IMAPStore
+    companion object {
+        @Singleton
+        @Provides
+        @com.example.mailinglist.di.IMAPStore
+        fun provideIMAPStore(): IMAPStore {
+            val mailSession: Session = getSession()
+            val store = mailSession.getStore(Constants.STORE_TYPE) as IMAPStore
 
-        runBlocking {
-            connectEmailStore(store)
+            runBlocking {
+                connectEmailStore(store)
+            }
+
+            return store
         }
 
-        return store
-    }
+        private fun getSession(): Session {
+            val props = Properties()
+            props[Constants.SESSION_PROP_SSL_ENABLE] = "true"
+            return Session.getDefaultInstance(props)
+        }
 
-    private fun getSession(): Session {
-        val props = Properties()
-        props[Constants.SESSION_PROP_SSL_ENABLE] = "true"
-        return Session.getDefaultInstance(props)
-    }
-
-    private suspend fun connectEmailStore(emailStore: IMAPStore) {
-        withContext(Dispatchers.IO) {
-            emailStore.connect(
-                Constants.IMAP_HOST_Lima,
-                Constants.PORT,
-                BuildConfig.USER,
-                BuildConfig.PASSWORD
-            )
+        private suspend fun connectEmailStore(emailStore: IMAPStore) {
+            withContext(Dispatchers.IO) {
+                emailStore.connect(
+                    Constants.IMAP_HOST_Lima,
+                    Constants.PORT,
+                    BuildConfig.USER,
+                    BuildConfig.PASSWORD
+                )
+            }
         }
     }
 }

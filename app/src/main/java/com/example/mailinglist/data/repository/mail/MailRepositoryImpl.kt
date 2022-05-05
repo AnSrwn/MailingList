@@ -1,10 +1,11 @@
 package com.example.mailinglist.data.repository.mail
 
-import com.example.mailinglist.Application
+import android.content.Context
 import com.example.mailinglist.data.model.Mail
 import com.example.mailinglist.data.model.MailApiModel
 import com.example.mailinglist.data.remote.mail.MailRemoteDataSource
 import com.example.mailinglist.shared.StorageManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.mail.Part
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -12,6 +13,8 @@ import javax.inject.Inject
 
 class MailRepositoryImpl @Inject constructor(
     private val mailRemoteDataSource: MailRemoteDataSource,
+    @com.example.mailinglist.di.StorageManager private val storageManager: StorageManager,
+    @ApplicationContext private val context: Context,
     private val ioDispatcher: CoroutineDispatcher
 ) : MailRepository {
     override suspend fun getPageCount(): Int {
@@ -55,10 +58,7 @@ class MailRepositoryImpl @Inject constructor(
             for (part in mail.images) {
                 val imageName = async {
                     val name: String = createImageName(mail, part)
-
-                    val cacheManager = StorageManager()
-                    cacheManager.cacheData(Application.context, part, name)
-
+                    storageManager.cacheData(context, part, name)
                     name
                 }
 
