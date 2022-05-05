@@ -2,40 +2,16 @@ package com.example.mailinglist.data.remote.jakarta
 
 import com.example.mailinglist.data.model.MailApiModel
 import com.example.mailinglist.shared.Constants
-import com.sun.mail.imap.IMAPStore
 import jakarta.mail.Message
 import kotlinx.coroutines.*
 import kotlin.math.ceil
 
-class Folder private constructor(
+class Folder constructor(
     private val jakartaFolder: jakarta.mail.Folder,
     private val ioDispatcher: CoroutineDispatcher
 ) {
     private var messageCount = 0
     private var pageCount = 0
-
-    companion object {
-        suspend operator fun invoke(store: IMAPStore, folderName: String): Folder {
-            val folder = withContext(Dispatchers.IO) {
-                getFolder(store, folderName)
-            }
-
-            return Folder(folder, Dispatchers.IO)
-        }
-
-        private suspend fun getFolder(
-            mailStore: IMAPStore,
-            folderName: String
-        ): jakarta.mail.Folder {
-            var folder: jakarta.mail.Folder
-            withContext(Dispatchers.IO) {
-                folder = mailStore.getFolder(folderName)
-                folder.open(jakarta.mail.Folder.READ_ONLY)
-            }
-            return folder
-        }
-
-    }
 
     suspend fun getPageCount(): Int {
         withContext(ioDispatcher) {

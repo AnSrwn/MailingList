@@ -1,39 +1,32 @@
 package com.example.mailinglist.data.repository.mail
 
-import com.example.mailinglist.Application
 import com.example.mailinglist.data.model.Mail
 import com.example.mailinglist.data.model.MailApiModel
-import com.example.mailinglist.data.remote.mail.MailApiImpl
 import com.example.mailinglist.data.remote.mail.MailRemoteDataSource
 import com.example.mailinglist.shared.StorageManager
 import jakarta.mail.Part
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 
-class MailRepositoryImpl private constructor(private val mailRemoteDataSource: MailRemoteDataSource) {
-    companion object {
-        suspend operator fun invoke(): MailRepositoryImpl {
-            val source = withContext(Dispatchers.IO) {
-                MailRemoteDataSource(MailApiImpl(), Dispatchers.IO)
-            }
-
-            return MailRepositoryImpl(source)
-        }
-    }
-
-    suspend fun getPageCount(): Int {
+class MailRepositoryImpl @Inject constructor(
+    private val mailRemoteDataSource: MailRemoteDataSource,
+    @com.example.mailinglist.di.StorageManager private val storageManager: StorageManager,
+    private val ioDispatcher: CoroutineDispatcher
+) : MailRepository {
+    override suspend fun getPageCount(): Int {
         var pageCount: Int
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             pageCount = mailRemoteDataSource.fetchPageCount()
         }
 
         return pageCount
     }
 
-    suspend fun getMails(pageIndex: Int): List<Mail> {
+    override suspend fun getMails(pageIndex: Int): List<Mail> {
         val mails = mutableListOf<Deferred<Mail>>()
 
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             val mailApiModels = mailRemoteDataSource.fetchMails(pageIndex)
             for (mailApiModel in mailApiModels) {
                 val mail = async {
@@ -58,14 +51,11 @@ class MailRepositoryImpl private constructor(private val mailRemoteDataSource: M
     private suspend fun cacheImages(mail: MailApiModel): List<String> {
         val images = mutableSetOf<Deferred<String>>()
 
-        coroutineScope {
+        withContext(ioDispatcher) {
             for (part in mail.images) {
                 val imageName = async {
                     val name: String = createImageName(mail, part)
-
-                    val cacheManager = StorageManager()
-                    cacheManager.cacheData(Application.context, part, name)
-
+                    storageManager.cacheData(part, name)
                     name
                 }
 

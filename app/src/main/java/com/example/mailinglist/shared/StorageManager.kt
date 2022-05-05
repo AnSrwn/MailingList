@@ -8,9 +8,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class StorageManager {
-
-    fun cacheData(context: Context, data: ByteArray, name: String) {
+class StorageManager(private val context: Context) {
+    fun cacheData(data: ByteArray, name: String) {
         val cacheDir: File = context.filesDir
         val file = File(cacheDir, name)
 
@@ -24,10 +23,10 @@ class StorageManager {
             }
         }
 
-        cleanDir(context)
+        cleanDir()
     }
 
-    fun cacheData(context: Context, part: Part, name: String) {
+    fun cacheData(part: Part, name: String) {
         val cacheDir: File = context.filesDir
         val path = cacheDir.absolutePath
 
@@ -41,10 +40,10 @@ class StorageManager {
             }
         }
 
-        cleanDir(context)
+        cleanDir()
     }
 
-    fun retrieveData(context: Context, name: String): ByteArray? {
+    fun retrieveData(name: String): ByteArray? {
         val cacheDir: File = context.filesDir
         val file = File(cacheDir, name)
 
@@ -61,7 +60,7 @@ class StorageManager {
         return data
     }
 
-    private fun cleanDir(context: Context) {
+    private fun cleanDir() {
         val cacheDir: File = context.filesDir
         val files = cacheDir.listFiles()
 

@@ -10,7 +10,9 @@ import androidx.fragment.app.commit
 import com.example.mailinglist.R
 import com.example.mailinglist.shared.Constants
 import com.example.mailinglist.ui.mailList.MailListFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

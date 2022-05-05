@@ -6,15 +6,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.mailinglist.Application
 import com.example.mailinglist.data.model.Mail
-import com.example.mailinglist.data.repository.mail.MailRepositoryImpl
+import com.example.mailinglist.data.repository.mail.MailRepository
 import com.example.mailinglist.shared.StorageManager
 import com.example.mailinglist.shared.notifyObserver
 import com.example.mailinglist.ui.model.MailListItem
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-class MailListViewModel : ViewModel() {
+@HiltViewModel
+class MailListViewModel @Inject constructor(
+    @com.example.mailinglist.di.MailRepository private val mailRepository: MailRepository,
+    @com.example.mailinglist.di.StorageManager private val storageManager: StorageManager
+) :
+    ViewModel() {
     private var mailListItems = MutableLiveData<MutableList<MailListItem>>(mutableListOf())
     private var pageCount: Int? = null
     private var pageIndex: Int = -1
@@ -32,8 +37,6 @@ class MailListViewModel : ViewModel() {
 
     fun getNextPage(): LiveData<MutableList<MailListItem>> {
         return liveData {
-            val mailRepository = MailRepositoryImpl()
-
             pageIndex += 1
 
             if (pageCount == null) {
@@ -84,8 +87,7 @@ class MailListViewModel : ViewModel() {
     }
 
     private fun retrieveImage(imageName: String): Bitmap? {
-        val cacheManager = StorageManager()
-        val image: ByteArray? = cacheManager.retrieveData(Application.context, imageName)
+        val image: ByteArray? = storageManager.retrieveData(imageName)
 
         if (image != null) {
             return BitmapFactory.decodeByteArray(image, 0, image.size)
