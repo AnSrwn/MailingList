@@ -12,7 +12,9 @@ import com.example.mailinglist.R
 import com.example.mailinglist.ui.shared.PaginationScrollListener
 import com.example.mailinglist.ui.shared.adapter.MailListAdapter
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MailListFragment : Fragment(R.layout.fragment_mail_list) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

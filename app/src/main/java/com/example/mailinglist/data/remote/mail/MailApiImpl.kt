@@ -1,32 +1,20 @@
 package com.example.mailinglist.data.remote.mail
 
 import com.example.mailinglist.data.model.MailApiModel
-import com.example.mailinglist.data.remote.jakarta.Folder
 import com.example.mailinglist.data.remote.jakarta.Store
-import com.example.mailinglist.shared.Constants
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MailApiImpl private constructor(
-    private val inboxFolder: Folder,
+class MailApiImpl @Inject constructor(
+    private val store: Store,
     private val ioDispatcher: CoroutineDispatcher
 ) : MailApi {
-    companion object {
-        suspend operator fun invoke(): MailApiImpl {
-            val folder = withContext(Dispatchers.IO) {
-                Store().getFolder(Constants.FOLDER_INBOX)
-            }
-
-            return MailApiImpl(folder, Dispatchers.IO)
-        }
-    }
-
     override suspend fun fetchPageCount(): Int {
         var pageCount: Int
 
         withContext(ioDispatcher) {
-            pageCount = inboxFolder.getPageCount()
+            pageCount = store.inbox.await().getPageCount()
         }
 
         return pageCount
@@ -36,7 +24,7 @@ class MailApiImpl private constructor(
         var mails: List<MailApiModel>
 
         withContext(ioDispatcher) {
-            mails = inboxFolder.getMails(pageIndex)
+            mails = store.inbox.await().getMails(pageIndex)
         }
 
         return mails

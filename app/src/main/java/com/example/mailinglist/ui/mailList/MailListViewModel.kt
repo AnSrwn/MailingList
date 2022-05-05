@@ -8,13 +8,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.mailinglist.Application
 import com.example.mailinglist.data.model.Mail
-import com.example.mailinglist.data.repository.mail.MailRepositoryImpl
+import com.example.mailinglist.data.repository.mail.MailRepository
 import com.example.mailinglist.shared.StorageManager
 import com.example.mailinglist.shared.notifyObserver
 import com.example.mailinglist.ui.model.MailListItem
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-class MailListViewModel : ViewModel() {
+@HiltViewModel
+class MailListViewModel @Inject constructor(@com.example.mailinglist.di.MailRepository private val mailRepository: MailRepository) :
+    ViewModel() {
     private var mailListItems = MutableLiveData<MutableList<MailListItem>>(mutableListOf())
     private var pageCount: Int? = null
     private var pageIndex: Int = -1
@@ -32,8 +35,6 @@ class MailListViewModel : ViewModel() {
 
     fun getNextPage(): LiveData<MutableList<MailListItem>> {
         return liveData {
-            val mailRepository = MailRepositoryImpl()
-
             pageIndex += 1
 
             if (pageCount == null) {
