@@ -93,7 +93,9 @@ class MessageUtil {
                     if (Part.ATTACHMENT.equals(
                             part.disposition,
                             true
-                        ) && part.isMimeType(Constants.MIME_TYPE_IMAGE_JPEG)
+                        ) && (part.isMimeType(Constants.MIME_TYPE_IMAGE_JPEG) || part.isMimeType(
+                            Constants.MIME_TYPE_IMAGE_PNG
+                        ))
                     ) {
                         imageParts.add(part)
                     }
@@ -101,13 +103,6 @@ class MessageUtil {
             }
 
             return imageParts
-        }
-
-        fun createImageName(message: Message, fileName: String): String {
-            var name: String =
-                getReplyToAddressFromMessage(message) + message.sentDate + fileName
-            name = name.replace(" ", "")
-            return name
         }
     }
 }
