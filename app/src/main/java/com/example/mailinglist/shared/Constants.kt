@@ -20,7 +20,6 @@ class Constants {
         const val MIME_TYPE_MULTIPART = "multipart/*"
         const val MIME_TYPE_MULTIPART_ALTERNATIVE = "multipart/alternative"
         const val MIME_TYPE_IMAGE_JPEG = "image/jpeg"
-
-
+        const val MIME_TYPE_IMAGE_PNG = "image/png"
     }
 }
