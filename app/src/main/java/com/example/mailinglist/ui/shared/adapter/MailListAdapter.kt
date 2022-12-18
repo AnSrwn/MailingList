@@ -10,14 +10,14 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.doOnPreDraw
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SnapHelper
+import androidx.viewpager2.widget.ViewPager2
 import com.example.mailinglist.R
 import com.example.mailinglist.shared.Constants
 import com.example.mailinglist.shared.utils.TimeUtil
 import com.example.mailinglist.ui.model.MailListItem
-import com.example.mailinglist.ui.shared.SnapToPositionHelper
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import java.util.*
 
 
@@ -27,7 +27,8 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
 
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val subjectView: TextView = itemView.findViewById(R.id.subjectView)
-        val imageGalleryView: RecyclerView = itemView.findViewById(R.id.imageGallery)
+        val imageViewPager: ViewPager2 = itemView.findViewById(R.id.imageViewPager)
+        val imageTabLayout: TabLayout = itemView.findViewById(R.id.imageTabLayout)
         val contentView: TextView = itemView.findViewById(R.id.contentView)
         val senderView: TextView = itemView.findViewById(R.id.senderView)
         val dateView: TextView = itemView.findViewById(R.id.dateView)
@@ -65,7 +66,7 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
             mailListItem.content,
             mailListItem.isExpanded
         )
-        bindImages(holder.imageGalleryView, mailListItem.images)
+        bindImages(holder.imageViewPager, holder.imageTabLayout, mailListItem.images)
         bindDate(holder.dateView, mailListItem.receivedDate)
 
         bindExpandCollapseButton(
@@ -113,30 +114,60 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
         }
     }
 
-    private fun bindImages(imageGalleryView: RecyclerView, images: List<Bitmap>) {
+    private fun bindImages(
+        imageViewPager: ViewPager2,
+        imageTabLayout: TabLayout,
+        images: List<Bitmap>
+    ) {
         if (images.isNotEmpty()) {
-            imageGalleryView.visibility = View.VISIBLE
-            prepareImageGalleryView(imageGalleryView)
+            imageViewPager.visibility = View.VISIBLE
+            imageTabLayout.visibility = View.VISIBLE
 
-            val adapter = ImageGalleryAdapter(images)
-            imageGalleryView.adapter = adapter
+            setupViewPager(images, imageViewPager)
+            setupTabLayout(images, imageTabLayout)
+            connectTabLayoutWithViewPager(imageTabLayout, imageViewPager)
         } else {
-            imageGalleryView.visibility = View.GONE
+            imageViewPager.visibility = View.GONE
+            imageTabLayout.visibility = View.GONE
         }
     }
 
-    private fun prepareImageGalleryView(imageGalleryView: RecyclerView) {
-        val layoutManager =
-            LinearLayoutManager(imageGalleryView.context, LinearLayoutManager.HORIZONTAL, false)
-
-        imageGalleryView.layoutManager = layoutManager
-        imageGalleryView.itemAnimator = null
-
-        if (imageGalleryView.onFlingListener == null) {
-            val helper: SnapHelper = SnapToPositionHelper()
-            helper.attachToRecyclerView(imageGalleryView)
-
+    private fun setupTabLayout(
+        images: List<Bitmap>,
+        imageTabLayout: TabLayout
+    ) {
+        for (i in 1..images.size) {
+            val tab = imageTabLayout.newTab()
+            imageTabLayout.addTab(tab)
         }
+    }
+
+    private fun setupViewPager(
+        images: List<Bitmap>,
+        imageViewPager: ViewPager2
+    ) {
+        val adapter = ImageGalleryAdapter(images)
+        imageViewPager.adapter = adapter
+    }
+
+    private fun connectTabLayoutWithViewPager(
+        imageTabLayout: TabLayout,
+        imageViewPager: ViewPager2
+    ) {
+        imageTabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                imageViewPager.currentItem = tab.position
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+
+        imageViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                imageTabLayout.selectTab(imageTabLayout.getTabAt(position))
+            }
+        })
     }
 
     private fun bindDate(dateView: TextView, sentDate: Date) {

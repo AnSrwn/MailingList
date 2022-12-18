@@ -4,13 +4,16 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/drawable/ic_launcher_background.xml" value="0.344" />
+        <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/drawable/tab_indicator_default.xml" value="0.313" />
+        <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/drawable/tab_indicator_selected.xml" value="0.313" />
+        <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/drawable/tab_selector.xml" value="0.313" />
         <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/layout/activity_main.xml" value="0.5359375" />
         <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/layout/custom_list_view.xml" value="0.39114583333333336" />
         <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/layout/custom_list_view_item.xml" value="0.1" />
         <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/layout/fragment_authentication.xml" value="0.3109375" />
         <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/layout/fragment_mail_list.xml" value="0.4807692307692308" />
         <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/layout/image_gallery_item.xml" value="0.2900390625" />
-        <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/layout/mail_list_view_item.xml" value="0.1" />
+        <entry key="..\:/Users/ansrw/AndroidStudioProjects/MailingList/app/src/main/res/layout/mail_list_view_item.xml" value="0.3333333333333333" />
       </map>
     </option>
   </component>
