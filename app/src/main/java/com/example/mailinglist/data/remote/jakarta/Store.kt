@@ -4,9 +4,10 @@ import com.example.mailinglist.shared.Constants
 import com.sun.mail.imap.IMAPStore
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import javax.inject.Named
 
 class Store @Inject constructor(
-    @com.example.mailinglist.di.IMAPStore private val mailStore: IMAPStore,
+    @Named("IMAPStore") private val mailStore: IMAPStore,
     private val ioDispatcher: CoroutineDispatcher
 ) {
     val inbox: Deferred<Folder>

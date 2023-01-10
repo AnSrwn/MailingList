@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.*
+import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -33,17 +34,17 @@ annotation class IMAPStore
 @InstallIn(SingletonComponent::class)
 abstract class RemoteModule {
     @Binds
-    @com.example.mailinglist.di.MailRepository
+    @Named("mailRepository")
     abstract fun bindMailRepository(mailRepositoryImpl: MailRepositoryImpl): MailRepository
 
     @Binds
-    @com.example.mailinglist.di.MailApi
+    @Named("mailApi")
     abstract fun bindMailApi(mailApiImpl: MailApiImpl): MailApi
 
     companion object {
         @Singleton
         @Provides
-        @com.example.mailinglist.di.IMAPStore
+        @Named("IMAPStore")
         fun provideIMAPStore(): IMAPStore {
             val mailSession: Session = getSession()
             val store = mailSession.getStore(Constants.STORE_TYPE) as IMAPStore

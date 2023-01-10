@@ -7,11 +7,12 @@ import com.example.mailinglist.shared.StorageManager
 import jakarta.mail.Part
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import javax.inject.Named
 
 
 class MailRepositoryImpl @Inject constructor(
     private val mailRemoteDataSource: MailRemoteDataSource,
-    @com.example.mailinglist.di.StorageManager private val storageManager: StorageManager,
+    @Named("storageManager") private val storageManager: StorageManager,
     private val ioDispatcher: CoroutineDispatcher
 ) : MailRepository {
     override suspend fun getPageCount(): Int {

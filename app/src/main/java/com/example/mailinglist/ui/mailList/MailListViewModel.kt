@@ -13,11 +13,12 @@ import com.example.mailinglist.shared.notifyObserver
 import com.example.mailinglist.ui.model.MailListItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class MailListViewModel @Inject constructor(
-    @com.example.mailinglist.di.MailRepository private val mailRepository: MailRepository,
-    @com.example.mailinglist.di.StorageManager private val storageManager: StorageManager
+    @Named("mailRepository") private val mailRepository: MailRepository,
+    @Named("storageManager") private val storageManager: StorageManager
 ) :
     ViewModel() {
     private var mailListItems = MutableLiveData<MutableList<MailListItem>>(mutableListOf())
