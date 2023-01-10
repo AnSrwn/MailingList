@@ -11,7 +11,8 @@ ext.versions = [
         materialVersion: '1.7.0',
 
         // compose
-        composeVersion: '1.3.1',
+        composeVersion: '1.3.2',
+        composeFoundationVersion: '1.3.1',
         constraintVersion: '2.1.4',
 
         // architecture components
@@ -19,7 +20,7 @@ ext.versions = [
         lifecycleVersion: '2.5.1',
 
         // di
-        hiltVersion: '2.44',
+        hiltVersion: '2.44.2',
 
          // JavaMail API
         jakartaVersion: '2.0.1',
