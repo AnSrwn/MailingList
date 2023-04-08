@@ -90,8 +90,8 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
     }
 
     private fun bindSenderName(senderView: TextView, senderName: String?) {
-        if (senderName != null) senderView.text =
-            senderName else senderView.visibility = View.GONE
+        if (senderName.isNullOrBlank()) senderView.visibility = View.GONE else senderView.text =
+            senderName
     }
 
     private fun bindContent(

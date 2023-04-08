@@ -53,6 +53,7 @@ class Folder constructor(
             .replace(Regex("\n{3,}"), "\n\n") // reduce empty lines
             .replace(Regex("<!--.* -->"), "") // remove html code
             .replace(Regex("p.*\\{.*\\}"), "") // remove paragraph styling code
+            .replace(Regex("\\*{6,}.+"), "") // remove abelana info text
             .trim()
     }
 

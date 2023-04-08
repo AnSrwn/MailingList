@@ -12,7 +12,7 @@ class Constants {
         const val ABELANA_MAIL_ADDRESS = "abelana@lists.riseup.net"
 
         const val PAGE_SIZE = 10
-        const val CARD_MAX_LINES = 5
+        const val CARD_MAX_LINES = 10
 
         const val MIME_TYPE_TEXT = "text/*"
         const val MIME_TYPE_TEXT_PLAIN = "text/plain"

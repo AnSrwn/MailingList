@@ -23,7 +23,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp">
 
                 <TextView
                     android:id="@+id/subjectView"
@@ -63,14 +65,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingHorizontal="16dp">
 
                 <TextView
                     android:id="@+id/contentView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="10dp"
                     android:autoLink="web"
                     android:textAppearance="?attr/textAppearanceBody1"
                     android:textColor="?android:attr/textColorSecondary"
