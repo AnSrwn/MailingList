@@ -8,7 +8,7 @@ import jakarta.mail.Part
 import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeBodyPart
 
-class MessageUtil {
+class MessageParsingUtil {
     companion object {
         fun getSubjectFromMessage(message: Message): String {
             return message.subject.replace(
@@ -22,12 +22,7 @@ class MessageUtil {
                 return part.content as String
             } else if (part.isMimeType(Constants.MIME_TYPE_TEXT_HTML)) {
                 val partContent = part.content as String
-                val text =
-                    HtmlCompat.fromHtml(partContent, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
-                return text
-                    .replace(Regex("\n\n+"), "\n")
-                    .replace(Regex("<!--.* -->"), "")
-                    .trim()
+                return HtmlCompat.fromHtml(partContent, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
             }
 
             // Multipart/alternative means that there are multiple parts with the same content,

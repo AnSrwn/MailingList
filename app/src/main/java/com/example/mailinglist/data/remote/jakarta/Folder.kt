@@ -30,12 +30,12 @@ class Folder constructor(
             for (message in messages) {
                 val mail = async {
                     MailApiModel(
-                        MessageUtil.getSubjectFromMessage(message),
-                        MessageUtil.getContentFromMessage(message) ?: "",
+                        MessageParsingUtil.getSubjectFromMessage(message),
+                        (MessageParsingUtil.getContentFromMessage(message) ?: "").prettify(),
                         message.receivedDate,
-                        MessageUtil.getSenderNameFromMessage(message),
-                        MessageUtil.getReplyToAddressFromMessage(message),
-                        MessageUtil.getImagePartsFromMessage(message)
+                        MessageParsingUtil.getSenderNameFromMessage(message),
+                        MessageParsingUtil.getReplyToAddressFromMessage(message),
+                        MessageParsingUtil.getImagePartsFromMessage(message)
                     )
                 }
                 mails.add(mail)
@@ -43,6 +43,17 @@ class Folder constructor(
         }
 
         return mails.awaitAll()
+    }
+
+    @Suppress("RegExpRedundantEscape")
+    private fun String.prettify(): String {
+        return this
+            .replace(Regex("\\s\n"), "\n") // remove whitespaces between line breaks
+            .replace(Regex("\n\\s"), "\n") // remove whitespaces between line breaks
+            .replace(Regex("\n{3,}"), "\n\n") // reduce empty lines
+            .replace(Regex("<!--.* -->"), "") // remove html code
+            .replace(Regex("p.*\\{.*\\}"), "") // remove paragraph styling code
+            .trim()
     }
 
     private suspend fun getPagedMessages(pageIndex: Int): List<Message> {

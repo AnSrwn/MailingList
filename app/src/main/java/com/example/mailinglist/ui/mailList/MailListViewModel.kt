@@ -28,7 +28,7 @@ class MailListViewModel @Inject constructor(
     var isLoading: Boolean = false
 
     fun getInitialData(): LiveData<MutableList<MailListItem>> {
-        return if (mailListItems.value != null && mailListItems.value!!.isNotEmpty()) {
+        return if (mailListItems.value?.isNotEmpty() == true) {
             mailListItems
         } else {
             getNextPage()
@@ -49,7 +49,7 @@ class MailListViewModel @Inject constructor(
                 emit(mutableListOf())
             } else {
                 val mails: List<Mail> = mailRepository.getMails(pageIndex)
-                val listItems: MutableList<MailListItem> = convertToMailListItems(mails)
+                val listItems: MutableList<MailListItem> = mails.toMailListItems()
 
                 mailListItems.value?.addAll(listItems)
                 mailListItems.notifyObserver()
@@ -59,8 +59,8 @@ class MailListViewModel @Inject constructor(
         }
     }
 
-    private fun convertToMailListItems(mails: List<Mail>): MutableList<MailListItem> {
-        val listItems: MutableList<MailListItem> = mails.map { mail ->
+    private fun List<Mail>.toMailListItems(): MutableList<MailListItem> {
+        val listItems: MutableList<MailListItem> = this.map { mail ->
             val images = retrieveImages(mail)
 
             MailListItem(
