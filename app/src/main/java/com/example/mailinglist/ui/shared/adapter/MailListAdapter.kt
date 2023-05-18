@@ -136,6 +136,8 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
         images: List<Bitmap>,
         imageTabLayout: TabLayout
     ) {
+        imageTabLayout.removeAllTabs()
+
         for (i in 1..images.size) {
             val tab = imageTabLayout.newTab()
             imageTabLayout.addTab(tab)
