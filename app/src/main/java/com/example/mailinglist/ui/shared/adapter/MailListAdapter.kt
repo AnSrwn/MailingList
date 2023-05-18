@@ -13,13 +13,13 @@ import androidx.core.view.doOnPreDraw
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.mailinglist.R
-import com.example.mailinglist.shared.Constants
 import com.example.mailinglist.shared.utils.TimeUtil
 import com.example.mailinglist.ui.model.MailListItem
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import java.util.*
 
+private const val COLLAPSE_MAX_CHAR_COUNT: Int = 200
 
 class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
     RecyclerView.Adapter<MailListAdapter.ViewHolder>() {
@@ -58,6 +58,12 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val mailListItem = mailListItems[position]
 
+        bindExpandCollapseButton(
+            holder.expandCollapseButton,
+            mailListItem,
+            position
+        )
+
         bindSubject(holder.subjectView, mailListItem.subject)
         bindSenderName(holder.senderView, mailListItem.senderName)
         bindContent(
@@ -69,12 +75,6 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
         bindImages(holder.imageViewPager, holder.imageTabLayout, mailListItem.images)
         bindDate(holder.dateView, mailListItem.receivedDate)
 
-        bindExpandCollapseButton(
-            holder.expandCollapseButton,
-            mailListItem,
-            position,
-            holder.contentView
-        )
         bindAnswerButton(holder.answerButton, mailListItem)
     }
 
@@ -100,10 +100,10 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
         content: String,
         isExpanded: Boolean
     ) {
-        contentView.maxLines =
-            if (isExpanded) Int.MAX_VALUE else Constants.CARD_MAX_LINES
-
-        contentView.text = content
+        contentView.text = if (isExpanded) content else content.getChunkByCharCount(
+            COLLAPSE_MAX_CHAR_COUNT,
+            " [...]"
+        )
 
         contentView.doOnPreDraw {
             // not optimal, because one-lines are getting removed
@@ -177,13 +177,12 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
     private fun bindExpandCollapseButton(
         expandCollapseButton: Button,
         mailListItem: MailListItem,
-        position: Int,
-        contentView: TextView
+        position: Int
     ) {
-        contentView.doOnPreDraw {
-            if (contentView.lineCount <= Constants.CARD_MAX_LINES) {
-                expandCollapseButton.visibility = View.GONE
-            }
+        if (mailListItem.content.length > COLLAPSE_MAX_CHAR_COUNT) {
+            expandCollapseButton.visibility = View.VISIBLE
+        } else {
+            expandCollapseButton.visibility = View.GONE
         }
 
         expandCollapseButton.text =
@@ -222,5 +221,16 @@ class MailListAdapter(private val mailListItems: MutableList<MailListItem>) :
 
             answerButton.context.startActivity(intent)
         }
+    }
+
+    private fun String.getChunkByCharCount(charCount: Int, appendString: String = ""): String {
+        val chunks = this.chunked(charCount)
+
+        if (chunks.size > 1) {
+            val restOfWord = chunks[1].split(" ")[0]
+            return chunks[0] + restOfWord + appendString
+        }
+
+        return chunks[0]
     }
 }
